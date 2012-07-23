@@ -22,12 +22,20 @@ INCLUDEPATH += ../include/
 HEADERS += \
            ../include/fwjson.h \
            ../include/fwjsonparser.h \
-           ../include/fwjsoncharmap.h
+           ../include/fwjsoncharmap.h \
+           ../include/fwjson_inl.h \
+           ../include/fwjson_global.h \
+           ../include/fwjsonexception.h
+
+SOURCES += \
+     fwjsonparser.cpp \
+     fwjson.cpp \
+     fwjsonexception.cpp
 
 symbian {
     MMP_RULES += EXPORTUNFROZEN
     TARGET.UID3 = 0xE009F12E
-    TARGET.CAPABILITY = 
+    TARGET.CAPABILITY =
     TARGET.EPOCALLOWDLLDATA = 1
     addFiles.sources = fwjson.dll
     addFiles.path = !:/sys/bin
@@ -42,6 +50,3 @@ unix:!symbian {
     }
     INSTALLS += target
 }
-
-SOURCES += \
-     fwjsonparser.cpp
