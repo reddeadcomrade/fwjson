@@ -6,7 +6,7 @@
     }, 
     "number array" : [-56, 1, 2.25, 3e-3, 5.], 
     "stroka" : "value_str",
-    "stroka 2" : "\u041f\u0440\u0438\u0432\u0435\u0442 \u043c\u0438\u0440!", 
+    "stroka 2" : "\"\u041f\u0440\u0438\u0432\u0435\u0442\" \u043c\u0438\u0440!", 
     "zero_str" : "",
     "visible" : true,
     "visible_str" : "true"

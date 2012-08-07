@@ -23,7 +23,7 @@ namespace
         C_Sp,      //Space (' ')
 
         C_Str,     //Quotation mark (")
-        C_Esc,     //Escape
+        C_Bsl,     //Backslash (\)
 
         //These are the six structural characters
         C_Col,     //Name separator, colon (:)
@@ -56,7 +56,7 @@ namespace
 /* 64 */  C_Uni, C_AZ,  C_AZ,  C_AZ,  C_AZ,  C_Ee,  C_AZ,  C_AZ,
 /* 72 */  C_AZ,  C_AZ,  C_AZ,  C_AZ,  C_AZ,  C_AZ,  C_AZ,  C_AZ,
 /* 80 */  C_AZ,  C_AZ,  C_AZ,  C_AZ,  C_AZ,  C_AZ,  C_AZ,  C_AZ,
-/* 88 */  C_AZ,  C_AZ,  C_AZ,  C_LSq, C_Esc, C_RSq, C_Uni, C_AZ,
+/* 88 */  C_AZ,  C_AZ,  C_AZ,  C_LSq, C_Bsl, C_RSq, C_Uni, C_AZ,
 
 /* 96 */  C_Uni, C_AZ,  C_AZ,  C_AZ,  C_AZ,  C_Ee,  C_AZ,  C_AZ,
 /* 104*/  C_AZ,  C_AZ,  C_AZ,  C_AZ,  C_AZ,  C_AZ,  C_AZ,  C_AZ,
@@ -71,6 +71,8 @@ namespace
     void x_var(char c, ParseData* data) throw(const FwJSON::Exception&);
     void x_bst(char c, ParseData* data) throw(const FwJSON::Exception&);
     void x_est(char c, ParseData* data) throw(const FwJSON::Exception&);
+    void x_bsc(char c, ParseData* data) throw(const FwJSON::Exception&);
+    void x_esc(char c, ParseData* data) throw(const FwJSON::Exception&);
     void x_atr(char c, ParseData* data) throw(const FwJSON::Exception&);
     void x_int(char c, ParseData* data) throw(const FwJSON::Exception&);
     void x_re1(char c, ParseData* data) throw(const FwJSON::Exception&);
@@ -96,27 +98,30 @@ namespace
 
     enum
     {
-        X_DOC = 0,
-        X_VAR = 1,
-        X_STR = 2,
-        X_VAL = 3,
-        X_INT = 4,
-        X_RE1 = 5,
-        X_RE2 = 6,
-        X_RE3 = 7,
-        X_ATR = 8,
-        X_SEO = 9,
-        X_SEA = 10,
-        X_EAT = 11,
-        X_MAX = 12
+        X_DOC,
+        X_VAR,
+        X_STR,
+        X_SCH,
+        X_VAL,
+        X_INT,
+        X_RE1,
+        X_RE2,
+        X_RE3,
+        X_ATR,
+        X_SEO,
+        X_SEA,
+        X_EAT,
+
+        X_MAX
     };
 
     //Parse command or parse state
     const CommandFunc parse_commands[X_MAX][C_MAX] = {
-/*            C_AZ,   C_Ee,  C_Uni,  C_Num,  C_Fra, C_Sig,    C_Sp,  C_Str,  C_Esc,  C_Col,            C_LCu,  C_RCu,  C_LSq,  C_RSq,  C_Sep,  C_Err */
+/*            C_AZ,   C_Ee,  C_Uni,  C_Num,  C_Fra, C_Sig,    C_Sp,  C_Str,  C_Bsl,  C_Col,            C_LCu,  C_RCu,  C_LSq,  C_RSq,  C_Sep,  C_Err */
 /*X_DOC*/{  &x_var, &x_var, &x_err, &x_err, &x_err, &x_err, &x_ign, &x_bst, &x_err, &x_err, /*X_DOC*/ &x_doc, &x_err, &x_err, &x_err, &x_err, &x_err  },
 /*X_VAR*/{       0,      0, &x_err,      0, &x_err, &x_err, &x_est, &x_err, &x_err, &x_atr, /*X_VAR*/ &x_ob2, &x_eob, &x_ar2, &x_ear, &x_val, &x_err  },
-/*X_STR*/{       0,      0,      0,      0,      0,      0,      0, &x_est,      0,      0, /*X_STR*/      0,      0,      0,      0,      0, &x_err  },
+/*X_STR*/{       0,      0,      0,      0,      0,      0,      0, &x_est, &x_bsc,      0, /*X_STR*/      0,      0,      0,      0,      0, &x_err  },
+/*X_SCH*/{  &x_esc, &x_err, &x_err, &x_err, &x_err, &x_err, &x_err, &x_esc, &x_esc, &x_err, /*X_STR*/ &x_err, &x_err, &x_err, &x_err, &x_err, &x_err  },
 /*X_VAL*/{  &x_var, &x_var, &x_err, &x_int, &x_err, &x_sg1, &x_ign, &x_bst, &x_err, &x_err, /*X_VAL*/ &x_ob1, &x_err, &x_ar1, &x_ear, &x_val, &x_err  },
 /*X_INT*/{  &x_err, &x_re2, &x_err,      0, &x_re1, &x_err, &x_enu, &x_err, &x_err, &x_err, /*X_INT*/ &x_err, &x_eob, &x_err, &x_ear, &x_val, &x_err  },
 /*X_RE1*/{  &x_err, &x_re2, &x_err,      0, &x_err, &x_err, &x_enu, &x_err, &x_err, &x_err, /*X_RE1*/ &x_err, &x_eob, &x_err, &x_ear, &x_val, &x_err  },
@@ -383,6 +388,35 @@ namespace
         default:
             Q_ASSERT(false);
             return;
+        }
+    }
+
+    void x_bsc(char c, ParseData* data) throw(const FwJSON::Exception&)
+    {
+        Q_UNUSED(c);
+        data->buffer += '\\';
+        data->xcmd = X_SCH;
+    }
+
+    void x_esc(char c, ParseData* data) throw(const FwJSON::Exception&)
+    {
+        switch(c)
+        {
+        case '"':
+        case '\\':
+        case '/':
+        case 'b':
+        case 'f':
+        case 'n':
+        case 'r':
+        case 't':
+        case 'u':
+            data->buffer += c;
+            data->xcmd = X_STR;
+            break;
+
+        default:
+            throw FwJSON::Exception(c, data->line, data->column);
         }
     }
 
@@ -682,15 +716,18 @@ double FwJSON::String::toNumber(bool* bOk) const
 
 QString FwJSON::String::toString(bool* bOk) const
 {
-    QString out;
-    out.reserve(value().size());
+    QString value = this->value();
 
-    QString::ConstIterator iter = value().begin();
-    QString::ConstIterator end = value().end();
+    QString out;
+    out.reserve(value.size());
+
+    QString::ConstIterator iter = value.begin();
+    QString::ConstIterator end = value.end();
     try
     {
         while(iter != end)
         {
+
             if(*iter != QChar('\\'))
             {
                 out.append(*iter);
@@ -700,33 +737,20 @@ QString FwJSON::String::toString(bool* bOk) const
 
             if((++iter) == end)
             {
-                throw QString();
+                throw FwJSON::Exception();
             }
 
             switch(iter->unicode())
             {
-            case 'b':
-                out.append(QChar('\b'));
-                break;
-
-            case 'f':
-                out.append(QChar('\f'));
-                break;
-
-            case 'n':
-                out.append(QChar('\n'));
-                break;
-
-            case 'r':
-                out.append(QChar('\r'));
-                break;
-
-            case 't':
-                out.append(QChar('\t'));
-                break;
-
+            case '"':
             case '\\':
-                out.append(QChar('\\'));
+            case '/':
+            case 'b':
+            case 'f':
+            case 'n':
+            case 'r':
+            case 't':
+                out.append(QChar(iter->unicode()));
                 break;
 
             case 'u':
@@ -736,7 +760,7 @@ QString FwJSON::String::toString(bool* bOk) const
                     short uch = QString(iter+1, 4).toShort(&ok, 16);
                     if(!ok)
                     {
-                        throw QString();
+                        throw FwJSON::Exception();
                     }
 
                     out.append(QChar(uch));
@@ -747,7 +771,7 @@ QString FwJSON::String::toString(bool* bOk) const
                 break;
 
             default:
-                throw QString();
+                throw FwJSON::Exception();
             }
 
             ++iter;

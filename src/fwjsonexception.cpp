@@ -24,6 +24,11 @@ FwJSON::Exception::Exception(const QByteArray& error,
         }
         m_error = tmp + ": " + error;
     }
+
+    if(m_error.isEmpty() && error.isEmpty())
+    {
+        m_error = "Unknow error";
+    }
 }
 
 FwJSON::Exception::Exception(const QByteArray& error,

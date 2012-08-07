@@ -17,7 +17,7 @@ class FWJSON_SHARED_EXPORT FwJSON::Exception : public std::exception
     typedef std::exception BaseClass;
 
 public:
-    Exception(const QByteArray& error,
+    Exception(const QByteArray& error = QByteArray(),
               const QByteArray& fileName = QByteArray(),
               int line = -1,
               int  column = -1) throw();
