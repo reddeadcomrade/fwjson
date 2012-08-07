@@ -40,7 +40,7 @@ namespace
     };
 
     //Types of ASCII chars
-    const quint8 chars_type[128] = {
+    const CharType chars_type[128] = {
 
           /*0 */ /*1 */ /*2 */ /*3 */ /*4 */ /*5 */ /*6 */ /*7 */
 /*  0 */  C_Err, C_Err, C_Err, C_Err, C_Err, C_Err, C_Err, C_Err,
@@ -152,7 +152,7 @@ namespace
         int line;
         int column;
         quint32 uintNumber;
-        quint8 charType;
+        CharType charType;
         bool declareRoot;
         FwJSON::NodeType type;
     };
@@ -808,10 +808,10 @@ int FwJSON::Number::toInt(bool* bOk) const
 {
     if(qAbs(value()) > 0. && (qAbs(value()) - INT_MAX) < 0.)
     {
-        (*bOk) = true;
+        if(bOk) { (*bOk) = true; }
         return static_cast<int>(value());
     }
-    (*bOk) = false;
+    if(bOk) { (*bOk) = true; }
     return 0;
 }
 
@@ -819,27 +819,29 @@ uint FwJSON::Number::toUint(bool* bOk) const
 {
     if(value() > 0. && ((value() - UINT_MAX) < 0.))
     {
-        (*bOk) = true;
+        if(bOk) { (*bOk) = true; }
         return static_cast<uint>(value());
     }
-    (*bOk) = false;
+
+    if(bOk) { (*bOk) = false; }
     return 0;
 }
 
 bool FwJSON::Number::toBool(bool* bOk) const
 {
-    (*bOk) = true;
+    if(bOk) { (*bOk) = true; }
     return qFuzzyCompare(value(), 0.);
 }
 
 double FwJSON::Number::toNumber(bool* bOk) const
 {
-    (*bOk) = true;
+    if(bOk) { (*bOk) = true; }
     return value();
 }
 
 QString FwJSON::Number::toString(bool* bOk) const
 {
+    if(bOk) { (*bOk) = true; }
     return QString::number(value());
 }
 
@@ -996,7 +998,6 @@ void FwJSON::Object::parse(QIODevice* ioDevice) throw (FwJSON::Exception)
 
         ParseData data;
         data.parent = this;
-        CommandFunc cmd = 0;
         while(!ioDevice->atEnd())
         {
             data.line++;
@@ -1008,15 +1009,15 @@ void FwJSON::Object::parse(QIODevice* ioDevice) throw (FwJSON::Exception)
                 char* c_ptr = line.data();
                 for(;data.column < line_size; data.column++, c_ptr++)
                 {
-                    char& c = (*c_ptr);
-                    data.charType = c > 0 ? chars_type[c] : C_Uni;
-                    if(cmd = parse_commands[data.xcmd][data.charType])
+                    quint8 nextChar = static_cast<quint8>(*c_ptr);
+                    data.charType = nextChar > 0 ? chars_type[nextChar] : C_Uni;
+                    if(CommandFunc cmd = parse_commands[data.xcmd][data.charType])
                     {
-                        cmd(c, &data);
+                        cmd((*c_ptr), &data);
                     }
                     else
                     {
-                        data.buffer += c;
+                        data.buffer += (*c_ptr);
                     }
                 }
             }
