@@ -152,7 +152,6 @@ namespace
         int line;
         int column;
         quint32 uintNumber;
-        CharType charType;
         bool declareRoot;
         FwJSON::NodeType type;
     };
@@ -165,7 +164,6 @@ namespace
         line(0),
         column(0),
         uintNumber(0),
-        charType(C_Err),
         declareRoot(false),
         type(FwJSON::T_Null)
     {
@@ -1010,8 +1008,9 @@ void FwJSON::Object::parse(QIODevice* ioDevice) throw (FwJSON::Exception)
                 for(;data.column < line_size; data.column++, c_ptr++)
                 {
                     quint8 nextChar = static_cast<quint8>(*c_ptr);
-                    data.charType = nextChar > 0 ? chars_type[nextChar] : C_Uni;
-                    if(CommandFunc cmd = parse_commands[data.xcmd][data.charType])
+
+                    CharType charType = nextChar > 0 ? chars_type[nextChar] : C_Uni;
+                    if(CommandFunc cmd = parse_commands[data.xcmd][charType])
                     {
                         cmd((*c_ptr), &data);
                     }
