@@ -25,12 +25,14 @@ HEADERS += \
            ../include/fwjsoncharmap.h \
            ../include/fwjson_inl.h \
            ../include/fwjson_global.h \
-           ../include/fwjsonexception.h
+           ../include/fwjsonexception.h \
+    fwjsonparserhelper.h
 
 SOURCES += \
      fwjsonparser.cpp \
      fwjson.cpp \
-     fwjsonexception.cpp
+     fwjsonexception.cpp \
+    fwjsonparserhelper.cpp
 
 symbian {
     MMP_RULES += EXPORTUNFROZEN

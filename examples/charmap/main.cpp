@@ -29,11 +29,13 @@ THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #include "fwjson.h"
 #include "fwjsoncharmap.h"
 
+#include "../../src/fwjsonparserhelper.h"
+
 int main(int argc, char *argv[])
 {
     QCoreApplication a(argc, argv);
     
-    QByteArray json("123456789");
+    QByteArray json("0123456789\\/bfnrtu");
 
     quint8* begin = reinterpret_cast<quint8*>(json.begin());
     quint8* end = reinterpret_cast<quint8*>(json.end());
@@ -52,8 +54,8 @@ int main(int argc, char *argv[])
             char_type_name = "C_Ee";
             break;
 
-        case FwJSON::Charmap::C_Uni:
-            char_type_name = "C_Uni";
+        case FwJSON::Charmap::C_Un0:
+            char_type_name = "C_Un0";
             break;
 
         case FwJSON::Charmap::C_Num:
@@ -74,10 +76,6 @@ int main(int argc, char *argv[])
 
         case FwJSON::Charmap::C_Str:
             char_type_name = "C_Str";
-            break;
-
-        case FwJSON::Charmap::C_Esc:
-            char_type_name = "C_Esc";
             break;
 
         case FwJSON::Charmap::C_Col:
@@ -108,12 +106,31 @@ int main(int argc, char *argv[])
             char_type_name = "Error";
             break;
 
+        case FwJSON::Charmap::C_RSo:
+            char_type_name = "Reverse solidus";
+            break;
+
+        case FwJSON::Charmap::C_SCh:
+            char_type_name = "Special chars (/, b, f, n, r, t)";
+            break;
+
+        case FwJSON::Charmap::C_SCu:
+            char_type_name = "Special char 'u' (u)";
+            break;
+
         default:
             Q_ASSERT(false);
         }
 
-        qDebug() << *(reinterpret_cast<char*>(c)) << char_type_name;
+        //qDebug() << *(reinterpret_cast<char*>(c)) << *c << char_type_name;
     }
+
+    QByteArray string("\"\\\"Привет\\\"\" : 1");
+
+    QByteArray::const_iterator beginChar = string.begin();
+    QByteArray::const_iterator endChar = string.end();
+
+    qDebug() << FwJSON::ParserHelper::parseString(beginChar, endChar);
 
     return a.exec();
 }

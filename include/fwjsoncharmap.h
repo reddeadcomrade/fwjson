@@ -25,6 +25,8 @@ THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #ifndef FIREWORKS_JSON_CHARMAP_H
 #define FIREWORKS_JSON_CHARMAP_H
 
+#include <QtGlobal>
+
 namespace FwJSON
 {
     namespace Charmap
@@ -33,7 +35,14 @@ namespace FwJSON
         {
             C_AZ,      //Alpha (A..Z, a..z, _)
             C_Ee,      //Char 'E' and 'e'
-            C_Uni,     //Unicode symbol
+
+            C_Uni,
+            C_Un0,
+            C_Un1,
+            C_Un2,
+            C_Un3,
+            C_Un4,
+            C_Un5,
 
             C_Num,     //Numbers (0..9)
             C_Fra,     //Decimal point (.)
@@ -42,7 +51,6 @@ namespace FwJSON
             C_Sp,      //Space (' ')
 
             C_Str,     //Quotation mark (")
-            C_Esc,     //Escape
 
             //These are the six structural characters
             C_Col,     //Name separator, colon (:)
@@ -51,6 +59,10 @@ namespace FwJSON
             C_LSq,     //Left square bracket ([)
             C_RSq,     //Right square bracket (])
             C_Sep,     //Items separator: Comma (,) or (;)
+
+            C_RSo,     //Reverse solidus (\)
+            C_SCh,     //Special chars (/, b, f, n, r, t)
+            C_SCu,     //Special char 'u' (u)
 
             //Error
             C_Err,     //Unknow
@@ -68,40 +80,45 @@ namespace FwJSON
         /* 24 */  C_Err, C_Err, C_Err, C_Err, C_Err, C_Err, C_Err, C_Err,
 
         /* 32 */  C_Sp,  C_Uni, C_Str, C_Uni, C_Uni, C_Uni, C_Uni, C_Uni,
-        /* 40 */  C_Uni, C_Uni, C_Uni, C_Sig, C_Sep, C_Sig, C_Fra, C_Uni,
+        /* 40 */  C_Uni, C_Uni, C_Uni, C_Sig, C_Sep, C_Sig, C_Fra, C_SCh,
         /* 48 */  C_Num, C_Num, C_Num, C_Num, C_Num, C_Num, C_Num, C_Num,
         /* 56 */  C_Num, C_Num, C_Col, C_Sep, C_Uni, C_Uni, C_Uni, C_Uni,
 
         /* 64 */  C_Uni, C_AZ,  C_AZ,  C_AZ,  C_AZ,  C_Ee,  C_AZ,  C_AZ,
         /* 72 */  C_AZ,  C_AZ,  C_AZ,  C_AZ,  C_AZ,  C_AZ,  C_AZ,  C_AZ,
         /* 80 */  C_AZ,  C_AZ,  C_AZ,  C_AZ,  C_AZ,  C_AZ,  C_AZ,  C_AZ,
-        /* 88 */  C_AZ,  C_AZ,  C_AZ,  C_LSq, C_Esc, C_RSq, C_Uni, C_AZ,
+        /* 88 */  C_AZ,  C_AZ,  C_AZ,  C_LSq, C_RSo, C_RSq, C_Uni, C_AZ,
 
-        /* 96 */  C_Uni, C_AZ,  C_AZ,  C_AZ,  C_AZ,  C_Ee,  C_AZ,  C_AZ,
-        /* 104*/  C_AZ,  C_AZ,  C_AZ,  C_AZ,  C_AZ,  C_AZ,  C_AZ,  C_AZ,
-        /* 112*/  C_AZ,  C_AZ,  C_AZ,  C_AZ,  C_AZ,  C_AZ,  C_AZ,  C_AZ,
+        /* 96 */  C_Uni, C_AZ,  C_SCh, C_AZ,  C_AZ,  C_Ee,  C_SCh, C_AZ,
+        /* 104*/  C_AZ,  C_AZ,  C_AZ,  C_AZ,  C_AZ,  C_AZ,  C_SCh, C_AZ,
+        /* 112*/  C_AZ,  C_AZ,  C_SCh, C_AZ,  C_SCh, C_SCu,  C_AZ, C_AZ,
         /* 120*/  C_AZ,  C_AZ,  C_AZ,  C_LCu, C_Uni, C_RCu, C_Uni, C_Err,
 
                   /*0 */ /*1 */ /*2 */ /*3 */ /*4 */ /*5 */ /*6 */ /*7 */
-        /* 128*/  C_Uni, C_Uni, C_Uni, C_Uni, C_Uni, C_Uni, C_Uni, C_Uni,
-        /* 136*/  C_Uni, C_Uni, C_Uni, C_Uni, C_Uni, C_Uni, C_Uni, C_Uni,
-        /* 144*/  C_Uni, C_Uni, C_Uni, C_Uni, C_Uni, C_Uni, C_Uni, C_Uni,
-        /* 152*/  C_Uni, C_Uni, C_Uni, C_Uni, C_Uni, C_Uni, C_Uni, C_Uni,
+        /* 128*/  C_Un0, C_Un0, C_Un0, C_Un0, C_Un0, C_Un0, C_Un0, C_Un0,
+        /* 136*/  C_Un0, C_Un0, C_Un0, C_Un0, C_Un0, C_Un0, C_Un0, C_Un0,
+        /* 144*/  C_Un0, C_Un0, C_Un0, C_Un0, C_Un0, C_Un0, C_Un0, C_Un0,
+        /* 152*/  C_Un0, C_Un0, C_Un0, C_Un0, C_Un0, C_Un0, C_Un0, C_Un0,
 
-        /* 160*/  C_Uni, C_Uni, C_Uni, C_Uni, C_Uni, C_Uni, C_Uni, C_Uni,
-        /* 168*/  C_Uni, C_Uni, C_Uni, C_Uni, C_Uni, C_Uni, C_Uni, C_Uni,
-        /* 176*/  C_Uni, C_Uni, C_Uni, C_Uni, C_Uni, C_Uni, C_Uni, C_Uni,
-        /* 184*/  C_Uni, C_Uni, C_Uni, C_Uni, C_Uni, C_Uni, C_Uni, C_Uni,
+        /* 160*/  C_Un0, C_Un0, C_Un0, C_Un0, C_Un0, C_Un0, C_Un0, C_Un0,
+        /* 168*/  C_Un0, C_Un0, C_Un0, C_Un0, C_Un0, C_Un0, C_Un0, C_Un0,
+        /* 176*/  C_Un0, C_Un0, C_Un0, C_Un0, C_Un0, C_Un0, C_Un0, C_Un0,
+        /* 184*/  C_Un0, C_Un0, C_Un0, C_Un0, C_Un0, C_Un0, C_Un0, C_Un0,
 
-        /* 192*/  C_Uni, C_Uni, C_Uni, C_Uni, C_Uni, C_Uni, C_Uni, C_Uni,
-        /* 200*/  C_Uni, C_Uni, C_Uni, C_Uni, C_Uni, C_Uni, C_Uni, C_Uni,
-        /* 208*/  C_Uni, C_Uni, C_Uni, C_Uni, C_Uni, C_Uni, C_Uni, C_Uni,
-        /* 216*/  C_Uni, C_Uni, C_Uni, C_Uni, C_Uni, C_Uni, C_Uni, C_Uni,
+        /* 192*/  C_Un1, C_Un1, C_Un1, C_Un1, C_Un1, C_Un1, C_Un1, C_Un1,
+        /* 200*/  C_Un1, C_Un1, C_Un1, C_Un1, C_Un1, C_Un1, C_Un1, C_Un1,
+        /* 208*/  C_Un1, C_Un1, C_Un1, C_Un1, C_Un1, C_Un1, C_Un1, C_Un1,
+        /* 216*/  C_Un1, C_Un1, C_Un1, C_Un1, C_Un1, C_Un1, C_Un1, C_Un1,
 
-        /* 224*/  C_Uni, C_Uni, C_Uni, C_Uni, C_Uni, C_Uni, C_Uni, C_Uni,
-        /* 232*/  C_Uni, C_Uni, C_Uni, C_Uni, C_Uni, C_Uni, C_Uni, C_Uni,
-        /* 240*/  C_Uni, C_Uni, C_Uni, C_Uni, C_Uni, C_Uni, C_Uni, C_Uni,
-        /* 248*/  C_Uni, C_Uni, C_Uni, C_Uni, C_Uni, C_Uni, C_Uni, C_Uni,
+        /* 224*/  C_Un2, C_Un2, C_Un2, C_Un2, C_Un2, C_Un2, C_Un2, C_Un2,
+        /* 232*/  C_Un2, C_Un2, C_Un2, C_Un2, C_Un2, C_Un2, C_Un2, C_Un2,
+        /* 240*/  C_Un3, C_Un3, C_Un3, C_Un3, C_Un3, C_Un3, C_Un3, C_Un3,
+        /* 248*/  C_Un4, C_Un4, C_Un4, C_Un4, C_Un5, C_Un5, C_Un5, C_Un5,
+        };
+
+        const quint8 utf8_magickNumber[7] =
+        {
+            0x3F, 0x1F, 0xF, 0x7, 0x3, 0x1
         };
     }
 }
