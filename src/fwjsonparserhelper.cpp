@@ -106,24 +106,16 @@ FwJSON::ParserHelper::utf32 FwJSON::ParserHelper::parseUtf8Chars(QByteArray::con
         throw FwJSON::Exception("Invalid UTF-8 string");
     }
 
-    utf32 result = *(reinterpret_cast<const quint8*>(beginChar)) & Charmap::utf8_magickNumber[extraBytes];
-    switch(extraBytes)
+    utf32 result = 0;
+    switch (extraBytes)
     {
-    case 5:
-        result = ((result << 6) | (*(reinterpret_cast<const quint8*>(++beginChar)) & 0x3F));
-    case 4:
-        result = ((result << 6) | (*(reinterpret_cast<const quint8*>(++beginChar)) & 0x3F));
-    case 3:
-        result = ((result << 6) | (*(reinterpret_cast<const quint8*>(++beginChar)) & 0x3F));
-    case 2:
-        result = ((result << 6) | (*(reinterpret_cast<const quint8*>(++beginChar)) & 0x3F));
-    case 1:
-        result = ((result << 6) | (*(reinterpret_cast<const quint8*>(++beginChar)) & 0x3F));
-        break;
-
-    default:
-        throw FwJSON::Exception("Invalid UTF-8 string");
+        case 5: result += *(reinterpret_cast<const quint8*>(beginChar++)); result <<= 6;
+        case 4: result += *(reinterpret_cast<const quint8*>(beginChar++)); result <<= 6;
+        case 3: result += *(reinterpret_cast<const quint8*>(beginChar++)); result <<= 6;
+        case 2: result += *(reinterpret_cast<const quint8*>(beginChar++)); result <<= 6;
+        case 1: result += *(reinterpret_cast<const quint8*>(beginChar++)); result <<= 6;
+        case 0: result += *(reinterpret_cast<const quint8*>(beginChar));
     }
 
-    return result;
+    return result - offsetsFromUTF8[extraBytes];
 }
