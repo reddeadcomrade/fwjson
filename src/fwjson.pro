@@ -26,7 +26,6 @@ HEADERS += \
     ../include/fwjson_inl.h \
     ../include/fwjson_global.h \
     ../include/fwjsonexception.h \
-    fwjsonparserhelper.h \
     helpers/fwjsonhelper.h \
     helpers/fwjsonstringhelper.h
 
@@ -34,7 +33,6 @@ SOURCES += \
     fwjsonparser.cpp \
     fwjson.cpp \
     fwjsonexception.cpp \
-    fwjsonparserhelper.cpp \
     helpers/fwjsonhelper.cpp \
     helpers/fwjsonstringhelper.cpp
 
