@@ -3,6 +3,7 @@
 
 #include <QtCore/qhash.h>
 #include <QtCore/qvector.h>
+#include <QtCore/qmetatype.h>
 
 #include "fwjson_global.h"
 #include "fwjsonexception.h"

@@ -67,7 +67,6 @@ QString FwJSON::ParserHelper::parseString(QByteArray::const_iterator& beginChar,
 
         case Charmap::C_Un0:
             throw FwJSON::Exception("Invalid UTF-8 string");
-            break;
 
         case Charmap::C_Un1:
             out.append(QChar(parseUtf8Chars(beginChar, endChar, 1)));
@@ -92,8 +91,6 @@ QString FwJSON::ParserHelper::parseString(QByteArray::const_iterator& beginChar,
         default:
             out.append(QChar(*beginChar));
         }
-
-        qDebug() << *(reinterpret_cast<const quint8*>(beginChar)) << *beginChar;
     }
 
     return out;
