@@ -29,7 +29,7 @@ THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #include "fwjson.h"
 #include "fwjsoncharmap.h"
 
-#include "../../src/fwjsonparserhelper.h"
+#include "../../src/helpers/fwjsonstringhelper.h"
 
 int main(int argc, char *argv[])
 {
@@ -130,7 +130,8 @@ int main(int argc, char *argv[])
     QByteArray::const_iterator beginChar = string.begin();
     QByteArray::const_iterator endChar = string.end();
 
-    qDebug() << FwJSON::ParserHelper::parseString(beginChar, endChar);
+    qDebug() << FwJSON::StringHelper(beginChar, endChar).parse();
+    qDebug() << *(beginChar);
 
     return a.exec();
 }

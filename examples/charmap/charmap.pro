@@ -20,7 +20,8 @@ CONFIG   -= app_bundle
 
 TEMPLATE = app
 
-INCLUDEPATH += ../../include
+INCLUDEPATH += ../../include \
+               ../../src
 
 LIBS += \
       -L../../bin \

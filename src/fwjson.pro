@@ -20,21 +20,23 @@ DEFINES += FWJSON_LIBRARY
 INCLUDEPATH += ../include/
 
 HEADERS += \
-           ../include/fwjson.h \
-           ../include/fwjsonparser.h \
-           ../include/fwjsoncharmap.h \
-           ../include/fwjson_inl.h \
-           ../include/fwjson_global.h \
-           ../include/fwjsonexception.h \
+    ../include/fwjson.h \
+    ../include/fwjsonparser.h \
+    ../include/fwjsoncharmap.h \
+    ../include/fwjson_inl.h \
+    ../include/fwjson_global.h \
+    ../include/fwjsonexception.h \
     fwjsonparserhelper.h \
-    helpers/helper.h
+    helpers/fwjsonhelper.h \
+    helpers/fwjsonstringhelper.h
 
 SOURCES += \
-     fwjsonparser.cpp \
-     fwjson.cpp \
-     fwjsonexception.cpp \
+    fwjsonparser.cpp \
+    fwjson.cpp \
+    fwjsonexception.cpp \
     fwjsonparserhelper.cpp \
-    helpers/helper.cpp
+    helpers/fwjsonhelper.cpp \
+    helpers/fwjsonstringhelper.cpp
 
 symbian {
     MMP_RULES += EXPORTUNFROZEN

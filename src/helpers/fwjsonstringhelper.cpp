@@ -1,19 +1,26 @@
-#include <QtCore/QDebug>
-
 #include "fwjsoncharmap.h"
+#include "fwjsonstringhelper.h"
 
-#include "fwjsonparserhelper.h"
+using namespace FwJSON;
 
-QString FwJSON::ParserHelper::parseString(QByteArray::const_iterator& beginChar, const QByteArray::const_iterator& endChar) throw (FwJSON::Exception)
+const StringHelper::utf32 StringHelper::offsetsFromUTF8[6] = { 0x00000000UL, 0x00003080UL, 0x000E2080UL,
+                                                               0x03C82080UL, 0xFA082080UL, 0x82082080UL };
+
+StringHelper::StringHelper(QByteArray::const_iterator& beginChar, const QByteArray::const_iterator& endChar) :
+    BaseClass(beginChar, endChar)
+{
+}
+
+QString StringHelper::parse() throw (FwJSON::Exception)
 {
     QString out;
 
     bool specialChars = false;
-    while(++beginChar != endChar)
+    while(++m_beginChar != m_endChar)
     {
         if(specialChars)
         {
-            switch(*beginChar)
+            switch(*m_beginChar)
             {
             case '"':
                 out.append(QChar('"'));
@@ -55,10 +62,10 @@ QString FwJSON::ParserHelper::parseString(QByteArray::const_iterator& beginChar,
             continue;
         }
 
-        switch(Charmap::chars_table[*(reinterpret_cast<const quint8*>(beginChar))])
+        switch(Charmap::chars_table[*(reinterpret_cast<const quint8*>(m_beginChar))])
         {
         case Charmap::C_Str:
-            ++beginChar;
+            ++m_beginChar;
             return out;
 
         case Charmap::C_RSo:
@@ -69,36 +76,36 @@ QString FwJSON::ParserHelper::parseString(QByteArray::const_iterator& beginChar,
             throw FwJSON::Exception("Invalid UTF-8 string");
 
         case Charmap::C_Un1:
-            out.append(QChar(parseUtf8Chars(beginChar, endChar, 1)));
+            out.append(QChar(parseUtf8Chars(1)));
             break;
 
         case Charmap::C_Un2:
-            out.append(QChar(parseUtf8Chars(beginChar, endChar, 2)));
+            out.append(QChar(parseUtf8Chars(2)));
             break;
 
         case Charmap::C_Un3:
-            out.append(QChar(parseUtf8Chars(beginChar, endChar, 3)));
+            out.append(QChar(parseUtf8Chars(3)));
             break;
 
         case Charmap::C_Un4:
-            out.append(QChar(parseUtf8Chars(beginChar, endChar, 4)));
+            out.append(QChar(parseUtf8Chars(4)));
             break;
 
         case Charmap::C_Un5:
-            out.append(QChar(parseUtf8Chars(beginChar, endChar, 5)));
+            out.append(QChar(parseUtf8Chars(5)));
             break;
 
         default:
-            out.append(QChar(*beginChar));
+            out.append(QChar(*m_beginChar));
         }
     }
 
     return out;
 }
 
-FwJSON::ParserHelper::utf32 FwJSON::ParserHelper::parseUtf8Chars(QByteArray::const_iterator& beginChar, const QByteArray::const_iterator& endChar, int extraBytes) throw (FwJSON::Exception)
+StringHelper::utf32 StringHelper::parseUtf8Chars(int extraBytes) throw (FwJSON::Exception)
 {
-    if(beginChar + extraBytes >= endChar)
+    if(m_beginChar + extraBytes >= m_endChar)
     {
         throw FwJSON::Exception("Invalid UTF-8 string");
     }
@@ -106,12 +113,12 @@ FwJSON::ParserHelper::utf32 FwJSON::ParserHelper::parseUtf8Chars(QByteArray::con
     utf32 result = 0;
     switch (extraBytes)
     {
-        case 5: result += *(reinterpret_cast<const quint8*>(beginChar++)); result <<= 6;
-        case 4: result += *(reinterpret_cast<const quint8*>(beginChar++)); result <<= 6;
-        case 3: result += *(reinterpret_cast<const quint8*>(beginChar++)); result <<= 6;
-        case 2: result += *(reinterpret_cast<const quint8*>(beginChar++)); result <<= 6;
-        case 1: result += *(reinterpret_cast<const quint8*>(beginChar++)); result <<= 6;
-        case 0: result += *(reinterpret_cast<const quint8*>(beginChar));
+        case 5: result += *(reinterpret_cast<const quint8*>(m_beginChar++)); result <<= 6;
+        case 4: result += *(reinterpret_cast<const quint8*>(m_beginChar++)); result <<= 6;
+        case 3: result += *(reinterpret_cast<const quint8*>(m_beginChar++)); result <<= 6;
+        case 2: result += *(reinterpret_cast<const quint8*>(m_beginChar++)); result <<= 6;
+        case 1: result += *(reinterpret_cast<const quint8*>(m_beginChar++)); result <<= 6;
+        case 0: result += *(reinterpret_cast<const quint8*>(m_beginChar));
     }
 
     return result - offsetsFromUTF8[extraBytes];
