@@ -2,3 +2,6 @@
 bin
 build*
 *.user
+
+# clangd cache
+.cache
