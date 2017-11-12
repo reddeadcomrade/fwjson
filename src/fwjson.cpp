@@ -1,7 +1,7 @@
-#include <QtCore/qbuffer.h>
-#include <QtCore/qiodevice.h>
-#include <QtCore/qdebug.h>
-#include <QtCore/qdir.h>
+#include <QtCore/QBuffer>
+#include <QtCore/QIoDevice>
+#include <QtCore/QDebug>
+#include <QtCore/QDir>
 
 #include "fwjson.h"
 
@@ -67,29 +67,29 @@ namespace
 
     typedef void(*CommandFunc)(char c, ParseData* data);
 
-    void x_doc(char c, ParseData* data) throw(const FwJSON::Exception&);
-    void x_var(char c, ParseData* data) throw(const FwJSON::Exception&);
-    void x_bst(char c, ParseData* data) throw(const FwJSON::Exception&);
-    void x_est(char c, ParseData* data) throw(const FwJSON::Exception&);
-    void x_bsc(char c, ParseData* data) throw(const FwJSON::Exception&);
-    void x_esc(char c, ParseData* data) throw(const FwJSON::Exception&);
-    void x_atr(char c, ParseData* data) throw(const FwJSON::Exception&);
-    void x_int(char c, ParseData* data) throw(const FwJSON::Exception&);
-    void x_re1(char c, ParseData* data) throw(const FwJSON::Exception&);
-    void x_re2(char c, ParseData* data) throw(const FwJSON::Exception&);
-    void x_enu(char c, ParseData* data) throw(const FwJSON::Exception&);
-    void x_sg1(char c, ParseData* data) throw(const FwJSON::Exception&);
-    void x_rn3(char c, ParseData* data) throw(const FwJSON::Exception&);
-    void x_rs3(char c, ParseData* data) throw(const FwJSON::Exception&);
-    void x_err(char c, ParseData* data) throw(const FwJSON::Exception&);
-    void x_ob1(char c, ParseData* data) throw(const FwJSON::Exception&);
-    void x_ob2(char c, ParseData* data) throw(const FwJSON::Exception&);
-    void x_eob(char c, ParseData* data) throw(const FwJSON::Exception&);
-    void x_val(char c, ParseData* data) throw(const FwJSON::Exception&);
-    void x_ign(char c, ParseData* data) throw(const FwJSON::Exception&);
-    void x_ar1(char c, ParseData* data) throw(const FwJSON::Exception&);
-    void x_ar2(char c, ParseData* data) throw(const FwJSON::Exception&);
-    void x_ear(char c, ParseData* data) throw(const FwJSON::Exception&);
+    void x_doc(char c, ParseData* data);
+    void x_var(char c, ParseData* data);
+    void x_bst(char c, ParseData* data);
+    void x_est(char c, ParseData* data);
+    void x_bsc(char c, ParseData* data);
+    void x_esc(char c, ParseData* data);
+    void x_atr(char c, ParseData* data);
+    void x_int(char c, ParseData* data);
+    void x_re1(char c, ParseData* data);
+    void x_re2(char c, ParseData* data);
+    void x_enu(char c, ParseData* data);
+    void x_sg1(char c, ParseData* data);
+    void x_rn3(char c, ParseData* data);
+    void x_rs3(char c, ParseData* data);
+    void x_err(char c, ParseData* data);
+    void x_ob1(char c, ParseData* data);
+    void x_ob2(char c, ParseData* data);
+    void x_eob(char c, ParseData* data);
+    void x_val(char c, ParseData* data);
+    void x_ign(char c, ParseData* data);
+    void x_ar1(char c, ParseData* data);
+    void x_ar2(char c, ParseData* data);
+    void x_ear(char c, ParseData* data);
     /*void x_val(ParseData* data);
 
     void x_est(ParseData* data);
@@ -337,14 +337,14 @@ namespace
         type = FwJSON::T_Null;
     }
 
-    void x_doc(char c, ParseData* data) throw(const FwJSON::Exception&)
+    void x_doc(char c, ParseData* data)
     {
         Q_UNUSED(c);
         data->xcmd = X_ATR;
         data->declareRoot = true;
     }
 
-    void x_var(char c, ParseData* data) throw(const FwJSON::Exception&)
+    void x_var(char c, ParseData* data)
     {
         if(data->parent)
         {
@@ -357,7 +357,7 @@ namespace
         throw FwJSON::Exception(c, data->line, data->column);
     }
 
-    void x_bst(char c, ParseData* data) throw(const FwJSON::Exception&)
+    void x_bst(char c, ParseData* data)
     {
         Q_UNUSED(c);
         if(data->parent)
@@ -370,7 +370,7 @@ namespace
         throw FwJSON::Exception(c, data->line, data->column);
     }
 
-    void x_est(char c, ParseData* data) throw(const FwJSON::Exception&)
+    void x_est(char c, ParseData* data)
     {
         Q_UNUSED(c);
         switch(data->parent->type())
@@ -389,14 +389,14 @@ namespace
         }
     }
 
-    void x_bsc(char c, ParseData* data) throw(const FwJSON::Exception&)
+    void x_bsc(char c, ParseData* data)
     {
         Q_UNUSED(c);
         data->buffer += '\\';
         data->xcmd = X_SCH;
     }
 
-    void x_esc(char c, ParseData* data) throw(const FwJSON::Exception&)
+    void x_esc(char c, ParseData* data)
     {
         switch(c)
         {
@@ -418,7 +418,7 @@ namespace
         }
     }
 
-    void x_atr(char c, ParseData* data) throw(const FwJSON::Exception&)
+    void x_atr(char c, ParseData* data)
     {
         if(data->parent->type() != FwJSON::T_Object)
         {
@@ -428,28 +428,28 @@ namespace
         data->xcmd = X_VAL;
     }
 
-    void x_int(char c, ParseData* data) throw(const FwJSON::Exception&)
+    void x_int(char c, ParseData* data)
     {
         data->xcmd = X_INT;
         data->type = FwJSON::T_Number;
         data->buffer += c;
     }
 
-    void x_re1(char c, ParseData* data) throw(const FwJSON::Exception&)
+    void x_re1(char c, ParseData* data)
     {
         data->xcmd = X_RE1;
         data->type = FwJSON::T_Number;
         data->buffer += c;
     }
 
-    void x_re2(char c, ParseData* data) throw(const FwJSON::Exception&)
+    void x_re2(char c, ParseData* data)
     {
         data->xcmd = X_RE2;
         data->type = FwJSON::T_Number;
         data->buffer += c;
     }
 
-    void x_enu(char c, ParseData* data) throw(const FwJSON::Exception&)
+    void x_enu(char c, ParseData* data)
     {
         Q_UNUSED(c);
         switch(data->parent->type())
@@ -468,7 +468,7 @@ namespace
         }
     }
 
-    void x_sg1(char c, ParseData* data) throw(const FwJSON::Exception&)
+    void x_sg1(char c, ParseData* data)
     {
         if(c == '+')
         {
@@ -483,13 +483,13 @@ namespace
         }
     }
 
-    void x_rn3(char c, ParseData* data) throw(const FwJSON::Exception&)
+    void x_rn3(char c, ParseData* data)
     {
         data->xcmd = X_RE3;
         data->buffer += c;
     }
 
-    void x_ob1(char c, ParseData* data) throw(const FwJSON::Exception&)
+    void x_ob1(char c, ParseData* data)
     {
         Q_UNUSED(c);
         data->type = FwJSON::T_Object;
@@ -497,13 +497,13 @@ namespace
         data->xcmd = X_ATR;
     }
 
-    void x_ob2(char c, ParseData* data) throw(const FwJSON::Exception&)
+    void x_ob2(char c, ParseData* data)
     {
         data->setupAttributeName();
         x_ob1(c,data);
     }
 
-    void x_eob(char c, ParseData* data) throw(const FwJSON::Exception&)
+    void x_eob(char c, ParseData* data)
     {
         if(data->parent->type() == FwJSON::T_Object)
         {
@@ -513,7 +513,7 @@ namespace
         throw FwJSON::Exception(c, data->line, data->column);
     }
 
-    void x_ar1(char c, ParseData* data) throw(const FwJSON::Exception&)
+    void x_ar1(char c, ParseData* data)
     {
         Q_UNUSED(c);
         data->type = FwJSON::T_Array;
@@ -521,13 +521,13 @@ namespace
         data->xcmd = X_VAL;
     }
 
-    void x_ar2(char c, ParseData* data) throw(const FwJSON::Exception&)
+    void x_ar2(char c, ParseData* data)
     {
         data->setupAttributeName();
         x_ar1(c, data);
     }
 
-    void x_ear(char c, ParseData* data) throw(const FwJSON::Exception&)
+    void x_ear(char c, ParseData* data)
     {
         if(data->parent->type() == FwJSON::T_Array)
         {
@@ -537,12 +537,12 @@ namespace
         throw FwJSON::Exception(c, data->line, data->column);
     }
 
-    void x_err(char c, ParseData* data) throw(const FwJSON::Exception&)
+    void x_err(char c, ParseData* data)
     {
         throw FwJSON::Exception(c, data->line, data->column);
     }
 
-    void x_val(char c, ParseData* data) throw(const FwJSON::Exception&)
+    void x_val(char c, ParseData* data)
     {
         if(data->parent)
         {
@@ -566,7 +566,7 @@ namespace
         throw FwJSON::Exception(c, data->line, data->column);
     }
 
-    void x_ign(char c, ParseData* data) throw(const FwJSON::Exception&)
+    void x_ign(char c, ParseData* data)
     {
         Q_UNUSED(c);
         Q_UNUSED(data);
@@ -974,7 +974,7 @@ QByteArray FwJSON::Object::toUtf8() const
     return "{" + attributes + "}";
 }
 
-void FwJSON::Object::parse(const QByteArray& utf8String) throw (FwJSON::Exception)
+void FwJSON::Object::parse(const QByteArray& utf8String)
 {
     if(utf8String.isEmpty())
     {
@@ -985,7 +985,7 @@ void FwJSON::Object::parse(const QByteArray& utf8String) throw (FwJSON::Exceptio
     parse(&buffer);
 }
 
-void FwJSON::Object::parse(QIODevice* ioDevice) throw (FwJSON::Exception)
+void FwJSON::Object::parse(QIODevice* ioDevice)
 {
     try
     {
@@ -1035,7 +1035,7 @@ void FwJSON::Object::parse(QIODevice* ioDevice) throw (FwJSON::Exception)
     }
 }
 
-void FwJSON::Object::parseFile(const QString& fileName) throw(FwJSON::Exception)
+void FwJSON::Object::parseFile(const QString& fileName)
 {
     QFile file(QDir::toNativeSeparators(fileName));
     if(!file.open(QIODevice::ReadOnly | QIODevice::Text))

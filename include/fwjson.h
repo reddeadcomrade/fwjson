@@ -247,9 +247,9 @@ public:
 
     QByteArray toUtf8() const;
 
-    void parse(const QByteArray& utf8String) throw(FwJSON::Exception);
-    void parse(QIODevice* ioDevice) throw(FwJSON::Exception);
-    void parseFile(const QString& fileName) throw(FwJSON::Exception);
+    void parse(const QByteArray& utf8String);
+    void parse(QIODevice* ioDevice);
+    void parseFile(const QString& fileName);
 
     virtual int toInt(bool* bOk) const;
     virtual uint toUint(bool* bOk) const;

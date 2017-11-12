@@ -1,7 +1,7 @@
 #include <QtCore/qdebug.h>
 
-#include <QtGui/qtreewidget.h>
-#include <QtGui/qfiledialog.h>
+#include <QtWidgets/QTreeWidget>
+#include <QtWidgets/QFileDialog>
 
 #include "fwjsonexception.h"
 
@@ -31,22 +31,22 @@ void MainWindow::addNode(QTreeWidgetItem* parent, FwJSON::Node* node)
         {
             parent->setText(1, "object");
 
-            FwJSON::Object* object = node->cast<FwJSON::Object>();
-            QHash<QByteArray, FwJSON::Node*> attributes = object->attributes();
-            for(QHash<QByteArray, FwJSON::Node*>::const_iterator iter = attributes.begin(); iter != attributes.end(); ++iter)
-            {
-                QTreeWidgetItem* childItem = new QTreeWidgetItem(parent);
-                childItem->setText(0, QString::fromUtf8(iter.key()));
-                addNode(childItem, iter.value());
-            }
+                FwJSON::Object* object = node->cast<FwJSON::Object>();
+                QHash<QByteArray, FwJSON::Node*> attributes = object->attributes();
+                for(QHash<QByteArray, FwJSON::Node*>::const_iterator iter = attributes.begin(); iter != attributes.end(); ++iter)
+                {
+                    QTreeWidgetItem* childItem = new QTreeWidgetItem(parent);
+                    childItem->setText(0, QString::fromUtf8(iter.key()));
+                    addNode(childItem, iter.value());
+                }
 
-            QString str = "<empty>";
-            if(object->hasValue<FwJSON::String>("stroka", &str))
-            {
-                qDebug() << str;
-            }
-            qDebug() << object->value<FwJSON::String>("stroka");
-
+                QString str = "<empty>";
+                if(object->hasValue<FwJSON::String>("stroka", &str))
+                {
+                    qDebug() << str;
+                }
+                qDebug() << object->value<FwJSON::String>("stroka");
+        
         }
         break;
 
