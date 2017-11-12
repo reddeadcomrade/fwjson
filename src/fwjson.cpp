@@ -1,5 +1,5 @@
 #include <QtCore/QBuffer>
-#include <QtCore/QIoDevice>
+#include <QtCore/QIODevice>
 #include <QtCore/QDebug>
 #include <QtCore/QDir>
 
@@ -80,7 +80,6 @@ namespace
     void x_enu(char c, ParseData* data);
     void x_sg1(char c, ParseData* data);
     void x_rn3(char c, ParseData* data);
-    void x_rs3(char c, ParseData* data);
     void x_err(char c, ParseData* data);
     void x_ob1(char c, ParseData* data);
     void x_ob2(char c, ParseData* data);
@@ -620,10 +619,10 @@ QByteArray FwJSON::Node::name() const
         switch(m_parent->type())
         {
         case FwJSON::T_Object:
-            return m_parent->cast<FwJSON::Object>()->attributeName(const_cast<FwJSON::Node*>(this));
+            return cast<FwJSON::Object>(m_parent)->attributeName(const_cast<FwJSON::Node*>(this));
 
         case FwJSON::T_Array:
-            return "[" + QByteArray::number(m_parent->cast<FwJSON::Array>()->indexOf(const_cast<FwJSON::Node*>(this))) + "]";
+            return "[" + QByteArray::number(cast<FwJSON::Array>(m_parent)->indexOf(const_cast<FwJSON::Node*>(this))) + "]";
 
         default:
             break;
@@ -938,7 +937,7 @@ FwJSON::Node* FwJSON::Object::addAttribute(const QByteArray& name, FwJSON::Node*
         }
         else
         {
-            FwJSON::Array* addArray = currentAttr->cast<FwJSON::Array>();
+            FwJSON::Array* addArray = cast<FwJSON::Array>(currentAttr);
             if(!addArray)
             {
                 addArray = this->addArray(name);

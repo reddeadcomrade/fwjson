@@ -31,7 +31,7 @@ void MainWindow::addNode(QTreeWidgetItem* parent, FwJSON::Node* node)
         {
             parent->setText(1, "object");
 
-                FwJSON::Object* object = node->cast<FwJSON::Object>();
+                FwJSON::Object* object = FwJSON::cast<FwJSON::Object>(node);
                 QHash<QByteArray, FwJSON::Node*> attributes = object->attributes();
                 for(QHash<QByteArray, FwJSON::Node*>::const_iterator iter = attributes.begin(); iter != attributes.end(); ++iter)
                 {
@@ -54,7 +54,7 @@ void MainWindow::addNode(QTreeWidgetItem* parent, FwJSON::Node* node)
         {
             bool bOk = false;
             parent->setText(1, "string");
-            FwJSON::String* stringNode = node->cast<FwJSON::String>();
+            FwJSON::String* stringNode = FwJSON::cast<FwJSON::String>(node);
             parent->setText(2, stringNode->isEmpty() ? "<empty>" : stringNode->toString(&bOk));
         }
         break;
@@ -68,7 +68,7 @@ void MainWindow::addNode(QTreeWidgetItem* parent, FwJSON::Node* node)
 
     case FwJSON::T_Array:
         {
-            FwJSON::Array* array = node->cast<FwJSON::Array>();
+            FwJSON::Array* array = FwJSON::cast<FwJSON::Array>(node);
 
             parent->setText(1, QString("array[%1]").arg(array->size()));
 

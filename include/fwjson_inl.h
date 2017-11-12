@@ -3,6 +3,14 @@
 
 #include "fwjson.h"
 
+template <class T>
+T* FwJSON::cast(Node* node)
+{
+    return node && node->type() == T::typeID ? static_cast<T*>(node) : nullptr;
+}
+
+///////////////////////////////////////////////////////////////////////////////
+
 FwJSON::Node* FwJSON::Node::parent() const
 {
     return m_parent;
@@ -27,11 +35,12 @@ QByteArray FwJSON::Object::attributeName(FwJSON::Node* child) const
     return m_attributes.key(child, "");
 }
 
-template<class T> bool FwJSON::Object::hasValue(const QByteArray& name, typename T::BaseType* value)
+template<class T>
+bool FwJSON::Object::hasValue(const QByteArray& name, typename T::BaseType* value)
 {
-    if(T* node = attribute(name)->cast<T>())
+    if (T* node = cast<T>(attribute(name)))
     {
-        if(value)
+        if (value)
         {
             (*value) = node->value();
         }
@@ -40,9 +49,10 @@ template<class T> bool FwJSON::Object::hasValue(const QByteArray& name, typename
     return false;
 }
 
-template<class T> typename T::BaseType FwJSON::Object::value(const QByteArray& name, const typename T::BaseType& defaultValue)
+template<class T>
+typename T::BaseType FwJSON::Object::value(const QByteArray& name, const typename T::BaseType& defaultValue)
 {
-    if(T* node = attribute(name)->cast<T>())
+    if (T* node = cast<T>(attribute(name)))
     {
         return node->value();
     }
@@ -51,7 +61,7 @@ template<class T> typename T::BaseType FwJSON::Object::value(const QByteArray& n
 
 template<class T> T* FwJSON::Object::setValue(const QByteArray& name, const typename T::BaseType& value)
 {
-    if(T* node = attribute(name)->cast<T>())
+    if(T* node = cast<T>(attribute(name)))
     {
         node->setValue(value);
         return node;

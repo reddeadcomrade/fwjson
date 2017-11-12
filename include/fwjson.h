@@ -39,6 +39,9 @@ namespace FwJSON
 
     FWJSON_SHARED_EXPORT bool nameToBool(const QByteArray&, bool* bOk);
     FWJSON_SHARED_EXPORT QByteArray boolToName(bool value);
+
+    template <class T>
+    T* cast(Node* node);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -57,15 +60,6 @@ public:
     inline bool isNull() const;
 
     QByteArray name() const;
-
-    template <class T> T* cast()
-    {
-        if(this)
-        {
-            return type() == T::typeID ? static_cast<T*>(this) : 0;
-        }
-        return 0;
-    }
 
     virtual QByteArray toUtf8() const = 0;
 
