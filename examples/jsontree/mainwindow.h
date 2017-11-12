@@ -1,5 +1,4 @@
-#ifndef MAINWINDOW_H
-#define MAINWINDOW_H
+#pragma once
 
 #include <QtWidgets/QMainWindow>
 
@@ -32,5 +31,3 @@ private:
     Ui::MainWindow *ui;
     FwJSON::Object m_rootObject;
 };
-
-#endif // MAINWINDOW_H

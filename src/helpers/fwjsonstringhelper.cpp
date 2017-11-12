@@ -11,7 +11,7 @@ StringHelper::StringHelper(QByteArray::const_iterator& beginChar, const QByteArr
 {
 }
 
-QString StringHelper::parse() throw (FwJSON::Exception)
+QString StringHelper::parse()
 {
     QString out;
 
@@ -103,7 +103,7 @@ QString StringHelper::parse() throw (FwJSON::Exception)
     return out;
 }
 
-StringHelper::utf32 StringHelper::parseUtf8Chars(int extraBytes) throw (FwJSON::Exception)
+StringHelper::utf32 StringHelper::parseUtf8Chars(int extraBytes)
 {
     if(m_beginChar + extraBytes >= m_endChar)
     {

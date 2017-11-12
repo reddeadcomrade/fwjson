@@ -1,6 +1,6 @@
 /******************************************************************************
 
-Copyright (c) 2012 Egor Popov <garlero@yandex.ru>
+Copyright (c) 2012-2017 Egor Popov <garlero@yandex.ru>
 
 Permission is hereby granted, free of charge, to any person obtaining a
 copy of this software and associated documentation files (the "Software"),
@@ -22,8 +22,7 @@ THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 ******************************************************************************/
 
-#ifndef FIREWORKS_JSON_CHARMAP_H
-#define FIREWORKS_JSON_CHARMAP_H
+#pragma once
 
 #include <QtGlobal>
 
@@ -123,6 +122,3 @@ namespace FwJSON
 
     }
 }
-
-#endif //FIREWORKS_JSON_CHARMAP_H
-    

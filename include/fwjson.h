@@ -1,5 +1,4 @@
-#ifndef FIREWORKS_JSON_H
-#define FIREWORKS_JSON_H
+#pragma once
 
 #include <QtCore/qhash.h>
 #include <QtCore/qvector.h>
@@ -301,5 +300,3 @@ private:
 };
 
 #include "fwjson_inl.h"
-
-#endif //FIREWORKS_JSON_H

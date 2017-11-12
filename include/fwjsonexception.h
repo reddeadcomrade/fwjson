@@ -1,5 +1,4 @@
-#ifndef FIREWORKS_JSON_EXCEPTION_H
-#define FIREWORKS_JSON_EXCEPTION_H
+#pragma once
 
 #include <exception>
 
@@ -46,5 +45,3 @@ QByteArray FwJSON::Exception::error() const
 {
     return m_error;
 }
-
-#endif //FIREWORKS_JSON_EXCEPTION_H

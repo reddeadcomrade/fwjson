@@ -1,5 +1,4 @@
-#ifndef FWJSONSTRINGHELPER_H
-#define FWJSONSTRINGHELPER_H
+#pragma once
 
 #include <QtCore/QString>
 
@@ -29,10 +28,8 @@ public:
 
     StringHelper(QByteArray::const_iterator& beginChar, const QByteArray::const_iterator& endChar);
 
-    QString parse() throw (FwJSON::Exception);
+    QString parse();
 
 protected:
-    utf32 parseUtf8Chars(int extraBytes) throw (FwJSON::Exception);
+    utf32 parseUtf8Chars(int extraBytes);
 };
-
-#endif // FWJSONSTRINGHELPER_H

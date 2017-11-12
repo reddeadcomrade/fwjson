@@ -1,5 +1,4 @@
-#ifndef FIREWORKS_JSON_HELPER_H
-#define FIREWORKS_JSON_HELPER_H
+#pragma once
 
 #include <QtCore/QByteArray>
 
@@ -17,5 +16,3 @@ protected:
     QByteArray::const_iterator& m_beginChar;
     const QByteArray::const_iterator& m_endChar;
 };
-
-#endif //FIREWORKS_JSON_HELPER_H

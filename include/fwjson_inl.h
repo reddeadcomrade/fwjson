@@ -1,5 +1,4 @@
-#ifndef FIREWORKS_JSON_INL_H
-#define FIREWORKS_JSON_INL_H
+#pragma once
 
 #include "fwjson.h"
 
@@ -167,5 +166,3 @@ FwJSON::Array* FwJSON::Array::addArray()
 {
     return static_cast<Array*>(addValue(new Array()));
 }
-
-#endif //FIREWORKS_JSON_INL_H
