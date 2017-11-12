@@ -19,19 +19,18 @@ namespace FwJSON
     class Object;
     class Array;
 
-    template <int type_id> class Base;
-    template <typename T, int type_id> class BaseValue;
-
-
-    enum NodeType
+    enum class Type
     {
-        T_Null,
-        T_String,
-        T_Number,
-        T_Bool,
-        T_Object,
-        T_Array
+        Null,
+        String,
+        Number,
+        Bool,
+        Object,
+        Array
     };
+
+    template <Type type_id> class Base;
+    template <typename T, Type type_id> class BaseValue;
 
     const char constantTrue[] = "true";
     const char constantFalse[] = "false";
@@ -55,7 +54,7 @@ public:
     Node();
     virtual ~Node();
 
-    virtual int type() const = 0;
+    virtual Type type() const = 0;
     inline bool isNull() const;
 
     QByteArray name() const;
@@ -75,39 +74,38 @@ public:
     virtual FwJSON::Node* clone() const = 0;
 
 private:
-    FwJSON::Node* m_parent;
+    FwJSON::Node* parent_ = nullptr;
 };
 
 ////////////////////////////////////////////////////////////////////////////////
 
-template <int type_id> class FwJSON::Base : public FwJSON::Node
+template <FwJSON::Type type_id>
+class FwJSON::Base
+    : public FwJSON::Node
 {
-    typedef FwJSON::Node BaseClass;
+    using BaseClass = FwJSON::Node;
 
 public:
+    static const Type typeID = type_id;
 
-    static const int typeID = type_id;
-
-    virtual int type() const
-    {
-        return typeID;
-    }
+    Type type() const override { return typeID; }
 };
 
 ////////////////////////////////////////////////////////////////////////////////
 
-template <typename T, int type_id> class FwJSON::BaseValue : public FwJSON::Base<type_id>
+template <typename T, FwJSON::Type type_id>
+class FwJSON::BaseValue
+    : public FwJSON::Base<type_id>
 {
-    typedef FwJSON::Node BaseClass;
+    using BaseClass = FwJSON::Base<type_id>;
 
 public:
 
     typedef T BaseType;
 
-    BaseValue(const BaseType& value) :
-        m_value(value)
-    {
-    }
+    BaseValue(const BaseType& value)
+        : m_value(value)
+    {}
 
     inline const BaseType& value() const
     {
@@ -123,12 +121,12 @@ private:
     BaseType m_value;
 };
 
-
 ////////////////////////////////////////////////////////////////////////////////
 
-class FWJSON_SHARED_EXPORT FwJSON::String : public FwJSON::BaseValue<QString, FwJSON::T_String>
+class FWJSON_SHARED_EXPORT FwJSON::String
+    : public FwJSON::BaseValue<QString, FwJSON::Type::String>
 {
-    typedef FwJSON::BaseValue<QString, FwJSON::T_String> BaseClass;
+    using BaseClass = FwJSON::BaseValue<QString, FwJSON::Type::String>;
 
 public:
 
@@ -154,9 +152,10 @@ public:
 
 ////////////////////////////////////////////////////////////////////////////////
 
-class FWJSON_SHARED_EXPORT FwJSON::Number : public FwJSON::BaseValue<double, FwJSON::T_Number>
+class FWJSON_SHARED_EXPORT FwJSON::Number
+   : public FwJSON::BaseValue<double, FwJSON::Type::Number>
 {
-    typedef FwJSON::BaseValue<double, FwJSON::T_Number> BaseClass;
+    using BaseClass = FwJSON::BaseValue<double, FwJSON::Type::Number>;
 public:
 
     inline static BaseType defaultValue()
@@ -179,9 +178,10 @@ public:
 
 /////////////////////////////////////////////////////////////////////////////////
 
-class FWJSON_SHARED_EXPORT FwJSON::Boolean: public FwJSON::BaseValue<bool, FwJSON::T_Bool>
+class FWJSON_SHARED_EXPORT FwJSON::Boolean
+    : public FwJSON::BaseValue<bool, FwJSON::Type::Bool>
 {
-  typedef FwJSON::BaseValue<bool, FwJSON::T_Bool> BaseClass;
+  using BaseClass = FwJSON::BaseValue<bool, FwJSON::Type::Bool>;
 
 public:
 
@@ -205,9 +205,10 @@ public:
 
 ////////////////////////////////////////////////////////////////////////////////
 
-class FWJSON_SHARED_EXPORT FwJSON::Object : public FwJSON::Base<FwJSON::T_Object>
+class FWJSON_SHARED_EXPORT FwJSON::Object
+    : public FwJSON::Base<FwJSON::Type::Object>
 {
-    typedef FwJSON::Base<FwJSON::T_Object> BaseClass;
+    using BaseClass = FwJSON::Base<FwJSON::Type::Object>;
 public:
 
     friend class FwJSON::Node;
@@ -258,9 +259,10 @@ private:
 
 ////////////////////////////////////////////////////////////////////////////////
 
-class FWJSON_SHARED_EXPORT FwJSON::Array : public FwJSON::Base<FwJSON::T_Array>
+class FWJSON_SHARED_EXPORT FwJSON::Array : public FwJSON::Base<FwJSON::Type::Array>
 {
-    typedef FwJSON::Base<FwJSON::T_Array> BaseClass;
+    using BaseClass = FwJSON::Base<FwJSON::Type::Array>;
+
 public:
 
     friend class FwJSON::Node;

@@ -27,7 +27,7 @@ void MainWindow::addNode(QTreeWidgetItem* parent, FwJSON::Node* node)
 {
     switch(node->type())
     {
-    case FwJSON::T_Object:
+    case FwJSON::Type::Object:
         {
             parent->setText(1, "object");
 
@@ -50,7 +50,7 @@ void MainWindow::addNode(QTreeWidgetItem* parent, FwJSON::Node* node)
         }
         break;
 
-    case FwJSON::T_String:
+    case FwJSON::Type::String:
         {
             bool bOk = false;
             parent->setText(1, "string");
@@ -59,14 +59,14 @@ void MainWindow::addNode(QTreeWidgetItem* parent, FwJSON::Node* node)
         }
         break;
 
-    case FwJSON::T_Number:
+    case FwJSON::Type::Number:
         {
             parent->setText(1, "number");
             parent->setText(2, QString::fromUtf8(node->toUtf8()));
         }
         break;
 
-    case FwJSON::T_Array:
+    case FwJSON::Type::Array:
         {
             FwJSON::Array* array = FwJSON::cast<FwJSON::Array>(node);
 
@@ -81,7 +81,7 @@ void MainWindow::addNode(QTreeWidgetItem* parent, FwJSON::Node* node)
             }
         }
         break;
-    case FwJSON::T_Bool:
+    case FwJSON::Type::Bool:
         {
             parent->setText(1, "boolean");
             parent->setText(2, QString::fromUtf8(node->toUtf8()));

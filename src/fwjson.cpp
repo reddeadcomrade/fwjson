@@ -152,7 +152,7 @@ namespace
         int column;
         quint32 uintNumber;
         bool declareRoot;
-        FwJSON::NodeType type;
+        FwJSON::Type type;
     };
 
     ParseData::ParseData() :
@@ -164,7 +164,7 @@ namespace
         column(0),
         uintNumber(0),
         declareRoot(false),
-        type(FwJSON::T_Null)
+        type(FwJSON::Type::Null)
     {
     }
 
@@ -182,11 +182,11 @@ namespace
         {
             switch(parent->type())
             {
-            case FwJSON::T_Array:
+            case FwJSON::Type::Array:
                 xcmd = X_SEA;
                 return;
 
-            case FwJSON::T_Object:
+            case FwJSON::Type::Object:
                 xcmd = X_SEO;
                 return;
 
@@ -205,11 +205,11 @@ namespace
     {
         switch(parent->type())
         {
-        case FwJSON::T_Array:
+        case FwJSON::Type::Array:
             setupArrayValue();
             return;
 
-        case FwJSON::T_Object:
+        case FwJSON::Type::Object:
             setupAttributeValue();
             return;
 
@@ -223,7 +223,7 @@ namespace
     {
         switch(type)
         {
-        case FwJSON::T_String:
+        case FwJSON::Type::String:
             {
                 if(isVariable)
                 {
@@ -246,7 +246,7 @@ namespace
             }
             break;
 
-        case FwJSON::T_Number:
+        case FwJSON::Type::Number:
             {
                 bool bOk = false;
                 double value = buffer.toDouble(&bOk);
@@ -259,15 +259,15 @@ namespace
             }
             break;
 
-        case FwJSON::T_Array:
+        case FwJSON::Type::Array:
             parent = static_cast<FwJSON::Object*>(parent)->addArray(attribute);
             break;
 
-        case FwJSON::T_Object:
+        case FwJSON::Type::Object:
             parent = static_cast<FwJSON::Object*>(parent)->addObject(attribute);
             break;
 
-        case FwJSON::T_Null:
+        case FwJSON::Type::Null:
             break;
 
         default:
@@ -275,14 +275,14 @@ namespace
             return;
         }
         attribute = "";
-        type = FwJSON::T_Null;
+        type = FwJSON::Type::Null;
     }
 
     void ParseData::setupArrayValue()
     {
         switch(type)
         {
-        case FwJSON::T_String:
+        case FwJSON::Type::String:
             {
                 if(isVariable)
                 {
@@ -305,7 +305,7 @@ namespace
             }
             break;
 
-        case FwJSON::T_Number:
+        case FwJSON::Type::Number:
             {
                 bool bOk = false;
                 double value = buffer.toDouble(&bOk);
@@ -318,22 +318,22 @@ namespace
             }
             break;
 
-        case FwJSON::T_Array:
+        case FwJSON::Type::Array:
             parent = static_cast<FwJSON::Array*>(parent)->addArray();
             break;
 
-        case FwJSON::T_Object:
+        case FwJSON::Type::Object:
             parent = static_cast<FwJSON::Array*>(parent)->addObject();
             break;
 
-        case FwJSON::T_Null:
+        case FwJSON::Type::Null:
             break;
 
         default:
             Q_ASSERT(false);
             return;
         }
-        type = FwJSON::T_Null;
+        type = FwJSON::Type::Null;
     }
 
     void x_doc(char c, ParseData* data)
@@ -347,7 +347,7 @@ namespace
     {
         if(data->parent)
         {
-            data->type = FwJSON::T_String;
+            data->type = FwJSON::Type::String;
             data->xcmd = X_VAR;
             data->isVariable = true;
             data->buffer += c;
@@ -361,7 +361,7 @@ namespace
         Q_UNUSED(c);
         if(data->parent)
         {
-            data->type = FwJSON::T_String;
+            data->type = FwJSON::Type::String;
             data->xcmd = X_STR;
             data->isVariable = false;
             return;
@@ -374,11 +374,11 @@ namespace
         Q_UNUSED(c);
         switch(data->parent->type())
         {
-        case FwJSON::T_Array:
+        case FwJSON::Type::Array:
             data->xcmd = X_SEA;
             return;
 
-        case FwJSON::T_Object:
+        case FwJSON::Type::Object:
             data->xcmd = data->attribute.isEmpty() ? X_EAT : X_SEO;
             return;
 
@@ -419,7 +419,7 @@ namespace
 
     void x_atr(char c, ParseData* data)
     {
-        if(data->parent->type() != FwJSON::T_Object)
+        if(data->parent->type() != FwJSON::Type::Object)
         {
             throw FwJSON::Exception(c, data->line, data->column);
         }
@@ -430,21 +430,21 @@ namespace
     void x_int(char c, ParseData* data)
     {
         data->xcmd = X_INT;
-        data->type = FwJSON::T_Number;
+        data->type = FwJSON::Type::Number;
         data->buffer += c;
     }
 
     void x_re1(char c, ParseData* data)
     {
         data->xcmd = X_RE1;
-        data->type = FwJSON::T_Number;
+        data->type = FwJSON::Type::Number;
         data->buffer += c;
     }
 
     void x_re2(char c, ParseData* data)
     {
         data->xcmd = X_RE2;
-        data->type = FwJSON::T_Number;
+        data->type = FwJSON::Type::Number;
         data->buffer += c;
     }
 
@@ -453,11 +453,11 @@ namespace
         Q_UNUSED(c);
         switch(data->parent->type())
         {
-        case FwJSON::T_Array:
+        case FwJSON::Type::Array:
             data->xcmd = X_SEA;
             return;
 
-        case FwJSON::T_Object:
+        case FwJSON::Type::Object:
             data->xcmd = X_SEO;
             return;
 
@@ -472,12 +472,12 @@ namespace
         if(c == '+')
         {
             data->xcmd = X_INT;
-            data->type = FwJSON::T_Number;
+            data->type = FwJSON::Type::Number;
         }
         else if(c == '-')
         {
             data->xcmd = X_INT;
-            data->type = FwJSON::T_Number;
+            data->type = FwJSON::Type::Number;
             data->buffer += c;
         }
     }
@@ -491,7 +491,7 @@ namespace
     void x_ob1(char c, ParseData* data)
     {
         Q_UNUSED(c);
-        data->type = FwJSON::T_Object;
+        data->type = FwJSON::Type::Object;
         data->setupValue();
         data->xcmd = X_ATR;
     }
@@ -504,7 +504,7 @@ namespace
 
     void x_eob(char c, ParseData* data)
     {
-        if(data->parent->type() == FwJSON::T_Object)
+        if(data->parent->type() == FwJSON::Type::Object)
         {
             data->structureUp();
             return;
@@ -515,7 +515,7 @@ namespace
     void x_ar1(char c, ParseData* data)
     {
         Q_UNUSED(c);
-        data->type = FwJSON::T_Array;
+        data->type = FwJSON::Type::Array;
         data->setupValue();
         data->xcmd = X_VAL;
     }
@@ -528,7 +528,7 @@ namespace
 
     void x_ear(char c, ParseData* data)
     {
-        if(data->parent->type() == FwJSON::T_Array)
+        if(data->parent->type() == FwJSON::Type::Array)
         {
             data->structureUp();
             return;
@@ -548,11 +548,11 @@ namespace
             data->setupValue();
             switch(data->parent->type())
             {
-            case FwJSON::T_Array:
+            case FwJSON::Type::Array:
                 data->xcmd = X_VAL;
                 break;
 
-            case FwJSON::T_Object:
+            case FwJSON::Type::Object:
                 data->xcmd = X_ATR;
                 break;
 
@@ -602,10 +602,8 @@ QByteArray FwJSON::boolToName(bool value)
 
 ////////////////////////////////////////////////////////////////////////////////
 
-FwJSON::Node::Node() :
-    m_parent(0)
-{
-}
+FwJSON::Node::Node()
+{}
 
 FwJSON::Node::~Node()
 {
@@ -614,21 +612,22 @@ FwJSON::Node::~Node()
 
 QByteArray FwJSON::Node::name() const
 {
-    if(m_parent)
+    if (parent_)
     {
-        switch(m_parent->type())
+        switch(parent_->type())
         {
-        case FwJSON::T_Object:
-            return cast<FwJSON::Object>(m_parent)->attributeName(const_cast<FwJSON::Node*>(this));
+        case FwJSON::Type::Object:
+            return cast<FwJSON::Object>(parent_)->attributeName(const_cast<FwJSON::Node*>(this));
 
-        case FwJSON::T_Array:
-            return "[" + QByteArray::number(cast<FwJSON::Array>(m_parent)->indexOf(const_cast<FwJSON::Node*>(this))) + "]";
+        case FwJSON::Type::Array:
+            return "[" + QByteArray::number(cast<FwJSON::Array>(parent_)->indexOf(const_cast<FwJSON::Node*>(this))) + "]";
 
         default:
+            Q_ASSERT(false);
             break;
         }
     }
-    else if(type() == FwJSON::T_Object || type() == FwJSON::T_Array)
+    else if(type() == FwJSON::Type::Object || type() == FwJSON::Type::Array)
     {
         return "root";
     }
@@ -637,20 +636,20 @@ QByteArray FwJSON::Node::name() const
 
 void FwJSON::Node::takeFromParent()
 {
-    if(m_parent)
+    if (parent_)
     {
-        switch(m_parent->type())
+        switch (parent_->type())
         {
-        case FwJSON::T_Object:
+        case FwJSON::Type::Object:
             {
-                FwJSON::Object* object = static_cast<FwJSON::Object*>(m_parent);
+                FwJSON::Object* object = static_cast<FwJSON::Object*>(parent_);
                 object->m_attributes.remove(object->m_attributes.key(this));
             }
             break;
 
-        case FwJSON::T_Array:
+        case FwJSON::Type::Array:
             {
-                FwJSON::Array* array = static_cast<FwJSON::Array*>(m_parent);
+                FwJSON::Array* array = static_cast<FwJSON::Array*>(parent_);
                 array->m_data.remove(array->m_data.indexOf(this));
             }
             break;
@@ -659,7 +658,7 @@ void FwJSON::Node::takeFromParent()
             Q_ASSERT(false);
             break;
         }
-        m_parent = 0;
+        parent_ = nullptr;
     }
 }
 
@@ -910,8 +909,8 @@ void FwJSON::Object::clear()
 {
     foreach(FwJSON::Node* node, m_attributes.values())
     {
-        Q_ASSERT(node->m_parent == this);
-        node->m_parent = 0;
+        Q_ASSERT(node->parent_ == this);
+        node->parent_ = nullptr;
         delete node;
     }
     m_attributes.clear();
@@ -919,9 +918,9 @@ void FwJSON::Object::clear()
 
 FwJSON::Node* FwJSON::Object::addAttribute(const QByteArray& name, FwJSON::Node* value, bool replace)
 {
-    if(value->m_parent)
+    if (value->parent_)
     {
-        if(value->m_parent == this)
+        if  (value->parent_ == this)
         {
             return value;
         }
@@ -929,7 +928,7 @@ FwJSON::Node* FwJSON::Object::addAttribute(const QByteArray& name, FwJSON::Node*
     }
 
     FwJSON::Node* currentAttr = m_attributes.value(name);
-    if(currentAttr)
+    if (currentAttr)
     {
         if(replace)
         {
@@ -947,7 +946,7 @@ FwJSON::Node* FwJSON::Object::addAttribute(const QByteArray& name, FwJSON::Node*
         }
     }
 
-    value->m_parent = this;
+    value->parent_ = this;
     m_attributes.insert(name, value);
     return value;
 }
@@ -1080,7 +1079,7 @@ FwJSON::Node* FwJSON::Object::clone() const
     for(QHash<QByteArray, FwJSON::Node*>::const_iterator iter = m_attributes.begin(); iter != m_attributes.end(); ++iter)
     {
         FwJSON::Node* child = iter.value()->clone();
-        child->m_parent = newObject;
+        child->parent_ = newObject;
         newObject->m_attributes.insert(iter.key(), child);
     }
     return newObject;
@@ -1102,8 +1101,8 @@ void FwJSON::Array::clear()
 {
     foreach(FwJSON::Node* node, m_data)
     {
-        Q_ASSERT(node->m_parent == this);
-        node->m_parent = 0;
+        Q_ASSERT(node->parent_ == this);
+        node->parent_ = nullptr;
         delete node;
     }
     m_data.clear();
@@ -1190,15 +1189,15 @@ FwJSON::Node* FwJSON::Array::clone() const
 
 FwJSON::Node* FwJSON::Array::addValue(FwJSON::Node* node)
 {
-    if(node->m_parent)
+    if(node->parent_)
     {
-        if(node->m_parent == this)
+        if(node->parent_ == this)
         {
             return node;
         }
         node->takeFromParent();
     }
-    node->m_parent = this;
+    node->parent_ = this;
     m_data.append(node);
     return node;
 }

@@ -12,7 +12,7 @@ T* FwJSON::cast(Node* node)
 
 FwJSON::Node* FwJSON::Node::parent() const
 {
-    return m_parent;
+    return parent_;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
