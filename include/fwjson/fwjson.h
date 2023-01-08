@@ -57,7 +57,7 @@ public:
 
 	std::string name() const;
 
-	virtual std::string toUtf8() const = 0;
+	virtual std::string  toJson() const = 0;
 
 	Node* parent() const {
 		return m_parent;
@@ -140,7 +140,7 @@ public:
 		return value().empty();
 	}
 
-	std::string toUtf8() const;
+	std::string toJson() const;
 
 	int toInt(bool* bOk) const final;
 	uint toUint(bool* bOk) const final;
@@ -160,7 +160,7 @@ class Number final
 public:
 	Number(double value = defaultValue());
 
-	std::string toUtf8() const;
+	std::string toJson() const;
 
 	int toInt(bool* bOk) const final;
 	uint toUint(bool* bOk) const final;
@@ -179,7 +179,7 @@ class Boolean final
 public:
 	Boolean(bool value = defaultValue());
 
-	std::string toUtf8() const;
+	std::string toJson() const;
 
 	std::int32_t toInt(bool* bOk) const final;
 	std::uint32_t toUint(bool* bOk) const final;
@@ -283,7 +283,7 @@ public:
 		return results;
 	}
 
-	std::string toUtf8() const;
+	std::string toJson() const;
 
 	void parse(const std::string& utf8String);
 	void parseStream(std::istream& stream);
@@ -345,7 +345,7 @@ public:
 		return index < m_data.size() ? m_data.at(index) : nullptr;
 	}
 
-	std::string toUtf8() const;
+	std::string toJson() const;
 
 	int toInt(bool* bOk) const final;
 	uint toUint(bool* bOk) const final;
@@ -368,18 +368,21 @@ private:
 class Exception final : public std::exception
 {
 public:
-	Exception(const std::string& error = std::string(),
-			  const std::string& fileName = std::string(),
-			  int line = -1,
-			  int  column = -1) throw();
+	Exception(
+		const std::string& error = std::string(),
+		const std::string& fileName = std::string(),
+		int line = -1,
+		int  column = -1) throw();
 
-	Exception(const std::string& error,
-			  int line,
-			  int  column) throw();
+	Exception(
+		const std::string& error,
+		int line,
+		int  column) throw();
 
-	Exception(char c,
-			  int line,
-			  int  column) throw();
+	Exception(
+		char c,
+		int line,
+		int  column) throw();
 
 	virtual ~Exception() throw();
 

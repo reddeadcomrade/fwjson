@@ -666,7 +666,7 @@ String::String(const std::string& value)
 	: BaseValue<std::string, Type::String>(value)
 {}
 
-std::string String::toUtf8() const
+std::string String::toJson() const
 {
 	return "\"" + value() + "\"";
 }
@@ -803,7 +803,7 @@ Number::Number(double value)
 	: BaseValue<double, Type::Number>(value)
 {}
 
-std::string Number::toUtf8() const
+std::string Number::toJson() const
 {
 	return std::to_string(value());
 }
@@ -860,7 +860,7 @@ Boolean::Boolean(bool value)
 	: BaseValue<bool, Type::Bool>(value)
 {}
 
-std::string Boolean::toUtf8() const
+std::string Boolean::toJson() const
 {
 	return value() ? constantTrue : constantFalse;
 }
@@ -987,11 +987,11 @@ Node* Object::addAttribute(const std::string& name, Node* value, bool replace)
 	return value;
 }
 
-std::string Object::toUtf8() const
+std::string Object::toJson() const
 {
 	std::string attributes;
 	for (const auto& it : m_attributes) {
-		std::string value = it.second->toUtf8();
+		std::string value = it.second->toJson();
 		if(!value.empty()) {
 			if(!attributes.empty()) {
 			   attributes += ",";
@@ -1124,14 +1124,14 @@ void Array::clear()
 	m_data.clear();
 }
 
-std::string Array::toUtf8() const
+std::string Array::toJson() const
 {
 	std::string items;
-	for(auto& node : m_data) {
+	for (auto& node : m_data) {
 		if(!items.empty()) {
 			items += ",";
 		}
-		items += node->toUtf8();
+		items += node->toJson();
 	}
 	if(items.empty()) {
 		return std::string();
@@ -1250,9 +1250,7 @@ Exception::Exception(
 	if(fileName.empty())
 	{
 		m_error = error;
-	}
-	else
-	{
+	} else {
 		std::string tmp = fileName;
 		if(line != -1)
 		{
@@ -1272,9 +1270,10 @@ Exception::Exception(
 	}
 }
 
-Exception::Exception(const std::string& error,
-						 int line,
-						 int  column) throw()
+Exception::Exception(
+	const std::string& error,
+	int line,
+	int  column) throw()
 	: std::exception()
 {
 	if(line != -1)
@@ -1292,9 +1291,10 @@ Exception::Exception(const std::string& error,
 	}
 }
 
-Exception::Exception(char c,
-						 int line,
-						 int column) throw()
+Exception::Exception(
+	char c,
+	int line,
+	int column) throw()
 	: std::exception()
 {
 	m_error = " (" +
