@@ -74,6 +74,11 @@ public:
 	virtual Node* clone() const = 0;
 
 	template <class T>
+	T* cast() {
+		return type() == T::typeID ? static_cast<T*>(this) : nullptr;
+	}
+
+	template <class T>
 	static T* cast(Node* node) {
 		return node && node->type() == T::typeID ? static_cast<T*>(node) : nullptr;
 	}
@@ -218,7 +223,13 @@ public:
 
 	void clear();
 
-	Node* attribute(const std::string& name) const {
+	template<class T>
+	T* child(const std::string& name) const {
+		const auto it = m_attributes.find(name);
+		return it != m_attributes.end() ? it->second->cast<T>() : nullptr;
+	}
+
+	Node* at(const std::string& name) const {
 		const auto it = m_attributes.find(name);
 		return it != m_attributes.end() ? it->second : nullptr;
 	}
@@ -235,7 +246,7 @@ public:
 	template<class T>  
 	bool hasValue(const std::string& name, typename T::BaseType* value = nullptr)
 	{
-		if (auto* node = cast<T>(attribute(name))) {
+		if (auto* node = child<T>(name)) {
 			if (value) {
 				(*value) = node->value();
 			}
@@ -246,13 +257,13 @@ public:
 
 	template<class T>
 	typename T::BaseType value(const std::string& name, const typename T::BaseType& defaultValue) {
-		auto* node = cast<T>(attribute(name));
+		auto* node = child<T>(name);
 		return node ? node->value() : defaultValue;
 	}
 
 	template<class T>
 	T* setValue(const std::string& name, const typename T::BaseType& value) {
-		if(auto* node = cast<T>(attribute(name))) {
+		if(auto* node = child<T>(name)) {
 			node->setValue(value);
 			return node;
 		}
@@ -325,7 +336,12 @@ public:
 		return -1;
 	}
 
-	Node* item(size_t index) const {
+	template<class T>
+	T* child(size_t index) const {
+		return index < m_data.size() ? m_data.at(index)->cast<T>() : nullptr;
+	}
+
+	Node* at(size_t index) const {
 		return index < m_data.size() ? m_data.at(index) : nullptr;
 	}
 
