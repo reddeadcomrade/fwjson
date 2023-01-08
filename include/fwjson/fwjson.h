@@ -34,14 +34,8 @@ enum class Type
 template <Type type_id>
 class Base;
 
-template <typename T, Type type_id> 
+template <typename T, Type type_id>
 class BaseValue;
-
-const char constantTrue[] = "true";
-const char constantFalse[] = "false";
-
-bool nameToBool(const std::string&, bool* bOk);
-std::string boolToName(bool value);
 
 class Node
 {
@@ -243,7 +237,7 @@ public:
 		return "";
 	}
 
-	template<class T>  
+	template<class T>
 	bool hasValue(const std::string& name, typename T::BaseType* value = nullptr)
 	{
 		if (auto* node = child<T>(name)) {

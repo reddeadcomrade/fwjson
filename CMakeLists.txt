@@ -11,6 +11,7 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 
 set(FwJson_SOURCES
 	src/fwjson.cpp
+	src/strings.cpp
 )
 
 set(FwJson_HEADERS
@@ -18,6 +19,7 @@ set(FwJson_HEADERS
 
 set(FwJson_PUBLIC
 	include/fwjson/fwjson.h
+	include/fwjson/strings.h
 )
 
 ########################################

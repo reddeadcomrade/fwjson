@@ -7,6 +7,7 @@
 #include <climits>
 
 #include <fwjson/fwjson.h>
+#include <fwjson/strings.h>
 
 namespace fwjson {
 
@@ -232,7 +233,7 @@ void ParseData::setupAttributeValue()
 			if(isVariable)
 			{
 				bool bOk = false;
-				bool value = nameToBool(buffer, &bOk);
+				bool value = strings::toBool(buffer, &bOk);
 				if(bOk)
 				{
 					static_cast<Object*>(parent)->addBoolean(attribute, value);
@@ -290,13 +291,10 @@ void ParseData::setupArrayValue()
 			if(isVariable)
 			{
 				bool bOk = false;
-				bool value = nameToBool(buffer, &bOk);
-				if(bOk)
-				{
+				bool value = strings::toBool(buffer, &bOk);
+				if(bOk) {
 					static_cast<Array*>(parent)->addBoolean(value);
-				}
-				else
-				{
+				} else {
 					static_cast<Array*>(parent)->addString(buffer);
 				}
 			}
@@ -564,32 +562,6 @@ void x_ign(char, ParseData*)
 
 } // namespace
 
-////////////////////////////////////////////////////////////////////////////////
-
-bool nameToBool(const std::string& value, bool* bOk)
-{
-	if(bOk) {
-		(*bOk) = false;
-	}
-	if(!value.empty()) {
-		if(value == "true") {
-			if(bOk) (*bOk) = true;
-			return true;
-		} else if(value == "false") {
-			if(bOk) (*bOk) = true;
-			return false;
-		}
-	}
-	return false;
-}
-
-std::string boolToName(bool value)
-{
-	return value ? "true": "false";
-}
-
-////////////////////////////////////////////////////////////////////////////////
-
 Node::Node()
 {}
 
@@ -700,14 +672,7 @@ std::uint32_t String::toUint(bool* bOk) const
 
 bool String::toBool(bool* bOk) const
 {
-	// std::string lowerValue = value().toLower();
-	// if(lowerValue == "true" || lowerValue == "yes")
-	// {
-	//	 (*bOk) = true;
-	//	 return true;
-	// }
-	// (*bOk) = (lowerValue == "false" || lowerValue == "no");
-	return false;
+	return strings::toBool(value(), bOk);
 }
 
 double String::toNumber(bool* bOk) const
@@ -862,7 +827,7 @@ Boolean::Boolean(bool value)
 
 std::string Boolean::toJson() const
 {
-	return value() ? constantTrue : constantFalse;
+	return strings::fromBool(value());
 }
 
 int Boolean::toInt(bool* bOk) const
@@ -892,7 +857,7 @@ double Boolean::toNumber(bool* bOk) const
 std::string Boolean::toString(bool* bOk) const
 {
 	(*bOk) = true;
-	return boolToName(value());
+	return strings::fromBool(value());
 }
 
 Node* Boolean::clone() const
