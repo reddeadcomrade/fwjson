@@ -48,4 +48,30 @@ std::string fromBool(bool value)
 	return std::string(result);
 }
 
+std::string_view trimLeft(const std::string& input)
+{
+	auto it = std::find_if(input.cbegin(), input.cend(), [](auto ch){
+		return !std::isspace(ch);
+	});
+	return { it, input.end() };
+}
+
+std::string_view trimRight(const std::string& input)
+{
+	auto it = std::find_if(input.crbegin(), input.crend(), [](auto ch){
+		return !std::isspace(ch);
+	});
+	return { input.begin(), it.base() };
+}
+
+std::string_view trim(const std::string& input)
+{
+	std::string_view left = trimLeft(input);
+	std::string_view right = trimRight(input);
+	if (left.begin() == left.end() || right.begin() == right.end()) {
+		return std::string_view();
+	}
+	return { left.begin(), right.end() };
+}
+
 } // namespace fwjson::strings

@@ -62,4 +62,94 @@ TEST(String, FromBool7)
 	EXPECT_EQ(value, false);
 }
 
+TEST(String, TrimLeft1)
+{
+	const auto result = strings::trimLeft(" hello ");
+	EXPECT_EQ(result, "hello ");
+}
+
+TEST(String, TrimLeft2)
+{
+	const auto result = strings::trimLeft("		hello ");
+	EXPECT_EQ(result, "hello ");
+}
+
+TEST(String, TrimLeft3)
+{
+	const auto result = strings::trimLeft(" hello world ");
+	EXPECT_EQ(result, "hello world ");
+}
+
+TEST(String, TrimLeft4)
+{
+	const auto result = strings::trimLeft("");
+	EXPECT_EQ(result, "");
+}
+
+TEST(String, TrimLeft5)
+{
+	const auto result = strings::trimLeft("   ");
+	EXPECT_EQ(result, "");
+}
+
+TEST(String, TrimRight1)
+{
+	const auto result = strings::trimRight(" hello ");
+	EXPECT_EQ(result, " hello");
+}
+
+TEST(String, TrimRight2)
+{
+	const auto result = strings::trimRight(" hello		");
+	EXPECT_EQ(result, " hello");
+}
+
+TEST(String, TrimRight3)
+{
+	const auto result = strings::trimRight(" hello world ");
+	EXPECT_EQ(result, " hello world");
+}
+
+TEST(String, TrimRight4)
+{
+	const auto result = strings::trimRight("");
+	EXPECT_EQ(result, "");
+}
+
+TEST(String, TrimRight5)
+{
+	const auto result = strings::trimRight(" 	");
+	EXPECT_EQ(result, "");
+}
+
+TEST(String, Trim1)
+{
+	const auto result = strings::trim(" hello ");
+	EXPECT_EQ(result, "hello");
+}
+
+TEST(String, Trim2)
+{
+	const auto result = strings::trim("hello");
+	EXPECT_EQ(result, "hello");
+}
+
+TEST(String, Trim3)
+{
+	const auto result = strings::trim("		hello world		");
+	EXPECT_EQ(result, "hello world");
+}
+
+TEST(String, Trim4)
+{
+	const auto result = strings::trim("");
+	EXPECT_EQ(result, "");
+}
+
+TEST(String, Trim5)
+{
+	const auto result = strings::trim("     ");
+	EXPECT_EQ(result, "");
+}
+
 } // namespace fwjson
