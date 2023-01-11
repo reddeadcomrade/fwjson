@@ -36,6 +36,7 @@ endif()
 set(SOURCES_TESTCASES
 	test_Json.cpp
 	test_Strings.cpp
+	test_Parsing.cpp
 )
 
 set(BIN FwJson_tests)
