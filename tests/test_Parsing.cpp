@@ -1,105 +1,104 @@
 #include <gtest/gtest.h>
 
-#include <fwjson/parsing.h>
+#include <fwjson/strings.h>
 
 namespace fwjson {
 
 TEST(ParsingHexStrings, ParsingValidInput1)
 {
-	bool error = false;
-	const auto result = parsing::parseHexString("#FF00AA", &error);
-	EXPECT_FALSE(error);
+	bool bOk = false;
+	const auto result = strings::fromHexString("#FF00AA", &bOk);
+	EXPECT_TRUE(bOk);
 	EXPECT_EQ(result, 0xFF00AA);
 }
 
 TEST(ParsingHexStrings, ParsingValidInput2)
 {
-	bool error = false;
-	const auto result = parsing::parseHexString("#ff00aa", &error);
-	EXPECT_FALSE(error);
+	bool bOk = false;
+	const auto result = strings::fromHexString("#ff00aa", &bOk);
+	EXPECT_TRUE(bOk);
 	EXPECT_EQ(result, 0xFF00AA);
 }
 
 TEST(ParsingHexStrings, ParsingValidInput3)
 {
-	bool error = false;
-	const auto result = parsing::parseHexString("#ff00aacc", &error);
-	EXPECT_FALSE(error);
+	bool bOk = false;
+	const auto result = strings::fromHexString("#ff00aacc", &bOk);
+	EXPECT_TRUE(bOk);
 	EXPECT_EQ(result, 0xff00aacc);
 }
 
 TEST(ParsingHexStrings, ParsingValidInput4)
 {
-	bool error = false;
-	const auto result = parsing::parseHexString("0xff00aa", &error);
-	EXPECT_FALSE(error);
+	bool bOk = false;
+	const auto result = strings::fromHexString("0xff00aa", &bOk);
+	EXPECT_TRUE(bOk);
 	EXPECT_EQ(result, 0xff00aa);
 }
 
 TEST(ParsingHexStrings, ParsingValidInput5)
 {
-	bool error = false;
-	const auto result = parsing::parseHexString("0xFF00AA", &error);
-	EXPECT_FALSE(error);
+	bool bOk = false;
+	const auto result = strings::fromHexString("0xFF00AA", &bOk);
+	EXPECT_TRUE(bOk);
 	EXPECT_EQ(result, 0xff00aa);
 }
 
 TEST(ParsingHexStrings, ParsingValidInput6)
 {
-	bool error = false;
-	const auto result = parsing::parseHexString("0XFF00AA", &error);
-	EXPECT_FALSE(error);
+	bool bOk = false;
+	const auto result = strings::fromHexString("0XFF00AA", &bOk);
+	EXPECT_TRUE(bOk);
 	EXPECT_EQ(result, 0xff00aa);
-}
-
-TEST(ParsingHexStrings, ParsingValidInput7)
-{
-	bool error = false;
-	const auto result = parsing::parseHexString("123456", &error);
-	EXPECT_FALSE(error);
-	EXPECT_EQ(result, 0x123456);
 }
 
 TEST(ParsingHexStrings, ParsingBadInput1)
 {
-	bool error = false;
-	parsing::parseHexString("", &error);
-	EXPECT_TRUE(error);
+	bool bOk = false;
+	strings::fromHexString("", &bOk);
+	EXPECT_FALSE(bOk);
 }
 
 TEST(ParsingHexStrings, ParsingBadInput2)
 {
-	bool error = false;
-	parsing::parseHexString("#", &error);
-	EXPECT_TRUE(error);
+	bool bOk = false;
+	strings::fromHexString("#", &bOk);
+	EXPECT_FALSE(bOk);
 }
 
 TEST(ParsingHexStrings, ParsingBadInput3)
 {
-	bool error = false;
-	parsing::parseHexString("0x", &error);
-	EXPECT_TRUE(error);
+	bool bOk = false;
+	strings::fromHexString("0x", &bOk);
+	EXPECT_FALSE(bOk);
 }
 
 TEST(ParsingHexStrings, ParsingBadInput4)
 {
-	bool error = false;
-	parsing::parseHexString("XYZ", &error);
-	EXPECT_TRUE(error);
+	bool bOk = false;
+	strings::fromHexString("XYZ", &bOk);
+	EXPECT_FALSE(bOk);
 }
 
 TEST(ParsingHexStrings, ParsingBadInput5)
 {
-	bool error = false;
-	parsing::parseHexString("#XYZ", &error);
-	EXPECT_TRUE(error);
+	bool bOk = false;
+	strings::fromHexString("#XYZ", &bOk);
+	EXPECT_FALSE(bOk);
 }
 
 TEST(ParsingHexStrings, ParsingBadInput6)
 {
-	bool error = false;
-	parsing::parseHexString("0xXYZ", &error);
-	EXPECT_TRUE(error);
+	bool bOk = false;
+	strings::fromHexString("0xXYZ", &bOk);
+	EXPECT_FALSE(bOk);
+}
+
+TEST(ParsingHexStrings, ParsingBadInput7)
+{
+	bool bOk = false;
+	strings::fromHexString("123456", &bOk);
+	EXPECT_FALSE(bOk);
 }
 
 } // namespace gs
