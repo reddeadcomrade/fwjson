@@ -22,6 +22,9 @@ std::string fromInt32(int32_t value);
 float toFloat(const std::string& value, bool* bOk = nullptr);
 std::string fromFloat(float value);
 
+double toDouble(const std::string& value, bool* bOk = nullptr);
+std::string fromDouble(double value);
+
 std::string_view trimLeft(const std::string& input);
 std::string_view trimRight(const std::string& input);
 std::string_view trim(const std::string& input);

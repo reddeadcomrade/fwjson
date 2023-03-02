@@ -645,29 +645,12 @@ std::string String::toJson() const
 
 int String::toInt(bool* bOk) const
 {
-	if (bOk) {
-		size_t index = 0;
-		auto result = std::stoi(value(), &index);
-		if (index != value().size()) {
-			*bOk = false;
-		}
-		return result;
-	}
-	return std::stoi(value());
+    return strings::toInt32(value(), bOk);
 }
 
 std::uint32_t String::toUint(bool* bOk) const
 {
-	// if(!value().empty())
-	// {
-	//	 if(value().at(0) == '#')
-	//	 {
-	//		 return value().right(value().length() - 1).toUInt(bOk, 16);
-	//	 }
-	//	 return value().toUInt(bOk);
-	// }
-	// (*bOk) = false;
-	return 0;
+    return strings::toUint32(value(), bOk);
 }
 
 bool String::toBool(bool* bOk) const
@@ -677,15 +660,7 @@ bool String::toBool(bool* bOk) const
 
 double String::toNumber(bool* bOk) const
 {
-	if (bOk) {
-		size_t index = 0;
-		auto result = std::stod(value(), &index);
-		if (index != value().size()) {
-			*bOk = false;
-		}
-		return result;
-	}
-	return std::stod(value());
+    return strings::toDouble(value(), bOk);
 }
 
 std::string String::toString(bool* bOk) const
@@ -974,8 +949,7 @@ void Object::parse(const std::string& utf8String)
 	if (utf8String.empty()) {
 		throw Exception("Input string is empty");
 	}
-	std::string tmpStr = utf8String;
-	std::istringstream stream(tmpStr);
+	std::istringstream stream(utf8String);
 	parseStream(stream);
 }
 
@@ -992,13 +966,12 @@ void Object::parseStream(std::istream& stream)
 			data.column = 0;
 			//std::string line = ioDevice->readLine().trimmed();
 			if(!line.empty()) {
-				int line_size = line.size();
-				char* c_ptr = line.data();
-				for(;data.column < line_size; data.column++, c_ptr++) {
-					auto nextChar = static_cast<std::uint8_t>(*c_ptr);
-
+				std::size_t line_size = line.size();
+				for(char* c_ptr = line.data(); data.column < line_size; data.column++, c_ptr++) {
+					auto nextChar = static_cast<std::int8_t>(*c_ptr);
 					CharType charType = nextChar > 0 ? chars_type[nextChar] : C_Uni;
-					if(CommandFunc cmd = parse_commands[data.xcmd][charType]) {
+
+					if (CommandFunc cmd = parse_commands[data.xcmd][charType]) {
 						cmd((*c_ptr), &data);
 					} else {
 						data.buffer += (*c_ptr);

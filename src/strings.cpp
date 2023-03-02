@@ -170,7 +170,7 @@ std::string fromInt64(int64_t value)
 
 uint32_t toUint32(const std::string& value, bool* bOk)
 {
-	return IntConverter<int64_t>::convert(value, bOk, std::stol);
+	return IntConverter<uint64_t>::convert(value, bOk, std::stoul);
 }
 
 std::string fromUint32(uint32_t value)
@@ -198,7 +198,20 @@ std::string fromFloat(float value)
 	const auto size = std::snprintf(nullptr, 0, "%.8g", value);
 	std::string result(size, 0);
 	std::sprintf(result.data(), "%.8g", value);
-	return std::string(result.begin(), result.end());
+	return { result.begin(), result.end() };
+}
+
+double toDouble(const std::string& value, bool* bOk)
+{
+    return RealConverter<double>::convert(value, bOk, std::stod);
+}
+
+std::string fromDouble(double value)
+{
+    const auto size = std::snprintf(nullptr, 0, "%.16g", value);
+    std::string result(size, 0);
+    std::sprintf(result.data(), "%.16g", value);
+    return { result.begin(), result.end() };
 }
 
 uint64_t fromHexString(const std::string& input, bool* bOk)
