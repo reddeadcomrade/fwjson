@@ -63,6 +63,45 @@ TEST(Json, Parse2)
     EXPECT_EQ(str->value(), "Привет мир!");
 }
 
+TEST(Json, SingleLineComment)
+{
+	std::string json =
+	"// json file describes menu \n"
+
+	"{\"menu\": {\n"
+		"// this is \"menu\" section \n"
+		"\"id\": \"file\", // file submenu \n"
+		"\"value\": \"File\", // value submenu \n"
+
+		"// this is popup section \n"
+		"\"popup\": { \n"
+	       "// popup menu items \n"
+			"\"menuitem\": [\n"
+	           "// items to work with doc \n"
+				"{\n"
+					"// this item creates new doc \n"
+					"\"value\": \"New\",             // item title \n"
+					"\"onclick\": \"CreateNewDoc()\" // item callback \n"
+				"},\n"
+
+				"// other items \n"
+				"{\"value\": \"Open\", \"onclick\": \"OpenDoc()\"},\n"
+				"{\"value\": \"Close\", \"onclick\": \"CloseDoc()\"}\n"
+			"]\n"
+		"}\n"
+	"}}\n"
+	"// end of json file";
+
+	auto object = std::make_unique<Object>();
+	object->parse(json);
+
+	EXPECT_EQ(object->attributesCount(), 1);
+
+	auto menuObject = object->child<Object>("menu");
+	ASSERT_TRUE(menuObject != nullptr);
+	EXPECT_EQ(menuObject->attributesCount(), 3);
+}
+
 TEST(Json, Double)
 {
 	std::string json = "{"

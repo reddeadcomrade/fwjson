@@ -43,15 +43,10 @@ public:
 	friend class Object;
 	friend class Array;
 
-	Node();
+	Node() = default;
 	virtual ~Node();
 
-	virtual Type type() const = 0;
-	inline bool isNull() const;
-
 	std::string name() const;
-
-	virtual std::string  toJson() const = 0;
 
 	Node* parent() const {
 		return m_parent;
@@ -59,11 +54,13 @@ public:
 
 	void takeFromParent();
 
+	virtual Type type() const = 0;
 	virtual std::int32_t toInt(bool* bOk) const = 0;
 	virtual std::uint32_t toUint(bool* bOk) const = 0;
 	virtual bool toBool(bool* bOk) const = 0;
 	virtual double toNumber(bool* bOk) const = 0;
 	virtual std::string toString(bool* bOk) const = 0;
+	virtual std::string toJson() const = 0;
 
 	virtual Node* clone() const = 0;
 
@@ -130,17 +127,12 @@ class String final
 public:
 	explicit String(const std::string& value = defaultValue());
 
-	bool isEmpty() const {
-		return value().empty();
-	}
-
-	std::string toJson() const;
-
 	int toInt(bool* bOk) const final;
 	uint toUint(bool* bOk) const final;
 	bool toBool(bool* bOk) const final;
 	double toNumber(bool* bOk) const final;
 	std::string toString(bool* bOk) const final;
+	std::string toJson() const;
 
 	Node* clone() const;
 };
@@ -154,13 +146,12 @@ class Number final
 public:
 	Number(double value = defaultValue());
 
-	std::string toJson() const;
-
 	int toInt(bool* bOk) const final;
 	uint toUint(bool* bOk) const final;
 	bool toBool(bool* bOk) const final;
 	double toNumber(bool* bOk) const final;
 	std::string toString(bool* bOk) const final;
+	std::string toJson() const;
 
 	Node* clone() const;
 };
@@ -173,13 +164,12 @@ class Boolean final
 public:
 	Boolean(bool value = defaultValue());
 
-	std::string toJson() const;
-
 	std::int32_t toInt(bool* bOk) const final;
 	std::uint32_t toUint(bool* bOk) const final;
 	bool toBool(bool* bOk) const final;
 	double toNumber(bool* bOk) const final;
 	std::string toString(bool* bOk) const final;
+	std::string toJson() const;
 
 	Node* clone() const;
 };
