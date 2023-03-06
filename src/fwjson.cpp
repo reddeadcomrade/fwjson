@@ -24,6 +24,7 @@ enum CharType
 	C_Num,    //Numbers (0..9)
 	C_Fra,    //Decimal point (.)
 	C_Sig,    //Char '+' and '-'
+	C_Ast,    //Asterisk(*)
 
 	C_Sp,     //Space (' ')
 
@@ -55,7 +56,7 @@ const CharType chars_type[128] = {
 /* 24 */  C_Err, C_Err, C_Err, C_Err, C_Err, C_Err, C_Err, C_Err,
 
 /* 32 */  C_Sp,  C_Uni, C_Str, C_Uni, C_Uni, C_Uni, C_Uni, C_Uni,
-/* 40 */  C_Uni, C_Uni, C_Uni, C_Sig, C_Sep, C_Sig, C_Fra, C_Slh,
+/* 40 */  C_Uni, C_Uni, C_Ast, C_Sig, C_Sep, C_Sig, C_Fra, C_Slh,
 /* 48 */  C_Num, C_Num, C_Num, C_Num, C_Num, C_Num, C_Num, C_Num,
 /* 56 */  C_Num, C_Num, C_Col, C_Sep, C_Uni, C_Uni, C_Uni, C_Uni,
 
@@ -119,27 +120,29 @@ enum
 	X_SEA,
 	X_EAT,
 	X_SLC,
+	X_MLC,
 
 	X_MAX
 };
 
 //Parse command or parse state
 const CommandFunc parse_commands[X_MAX][C_MAX] = {
-/*          C_AZ,   C_Ee,   C_Uni,  C_Num,  C_Fra,  C_Sig,  C_Sp,   C_Str,  C_Bsl,  C_Slh,  C_Col,            C_LCu,  C_RCu,  C_LSq,  C_RSq,  C_Sep,  C_Err */
-/*X_DOC*/{  &x_var, &x_var, &x_err, &x_err, &x_err, &x_err, &x_ign, &x_bst, &x_err, &x_com, &x_err, /*X_DOC*/ &x_doc, &x_err, &x_err, &x_err, &x_err, &x_err  },
-/*X_VAR*/{  0,      0,      &x_err, 0,      &x_err, &x_err, &x_est, &x_err, &x_err, 0,      &x_atr, /*X_VAR*/ &x_ob2, &x_eob, &x_ar2, &x_ear, &x_val, &x_err  },
-/*X_STR*/{  0,      0,      0,      0,      0,      0,      0,      &x_est, &x_bsc, 0,      0,      /*X_STR*/ 0,      0,      0,      0,      0,      &x_err  },
-/*X_SCH*/{  &x_esc, &x_err, &x_err, &x_err, &x_err, &x_err, &x_err, &x_esc, &x_esc, 0,      &x_err, /*X_STR*/ &x_err, &x_err, &x_err, &x_err, &x_err, &x_err  },
-/*X_VAL*/{  &x_var, &x_var, &x_err, &x_int, &x_err, &x_sg1, &x_ign, &x_bst, &x_err, &x_com, &x_err, /*X_VAL*/ &x_ob1, &x_err, &x_ar1, &x_ear, &x_val, &x_err  },
-/*X_INT*/{  &x_err, &x_re2, &x_err, 0,      &x_re1, &x_err, &x_enu, &x_err, &x_err, 0,      &x_err, /*X_INT*/ &x_err, &x_eob, &x_err, &x_ear, &x_val, &x_err  },
-/*X_RE1*/{  &x_err, &x_re2, &x_err, 0,      &x_err, &x_err, &x_enu, &x_err, &x_err, 0,      &x_err, /*X_RE1*/ &x_err, &x_eob, &x_err, &x_ear, &x_val, &x_err  },
-/*X_RE2*/{  &x_err, &x_err, &x_err, &x_rn3, &x_err, &x_rn3, &x_err, &x_err, &x_err, 0,      &x_err, /*X_RE2*/ &x_err, &x_err, &x_err, &x_err, &x_err, &x_err  },
-/*X_RE3*/{  &x_err, &x_err, &x_err, 0,      &x_err, &x_err, &x_enu, &x_err, &x_err, 0,      &x_err, /*X_RE3*/ &x_err, &x_eob, &x_err, &x_ear, &x_val, &x_err  },
-/*X_ATR*/{  &x_var, &x_var, &x_err, &x_err, &x_err, &x_err, &x_ign, &x_bst, &x_err, &x_com, &x_err, /*X_ATR*/ &x_err, &x_eob, &x_err, &x_err, &x_err, &x_err  },
-/*X_SEO*/{  &x_err, &x_err, &x_err, &x_err, &x_err, &x_err, &x_ign, &x_err, &x_err, &x_com, &x_err, /*X_SEO*/ &x_err, &x_eob, &x_err, &x_err, &x_val, &x_err  },
-/*X_SEA*/{  &x_err, &x_err, &x_err, &x_err, &x_err, &x_err, &x_ign, &x_err, &x_err, 0,      &x_err, /*X_SEA*/ &x_err, &x_err, &x_err, &x_ear, &x_val, &x_err  },
-/*X_EAT*/{  &x_err, &x_err, &x_err, &x_err, &x_err, &x_err, &x_ign, &x_err, &x_err, 0,      &x_atr, /*X_EAT*/ &x_ob2, &x_err, &x_ar2, &x_err, &x_err, &x_err  },
-/*X_SLC*/{  &x_com, &x_com, &x_com, &x_com, &x_com, &x_com, &x_com, &x_com, &x_com, &x_com, &x_com, /*X_EAT*/ &x_com, &x_com, &x_com, &x_com, &x_com, &x_err  },
+/*          C_AZ,   C_Ee,   C_Uni,  C_Num,  C_Fra,  C_Sig,  C_Ast,  C_Sp,   C_Str,  C_Bsl,  C_Slh,  C_Col,            C_LCu,  C_RCu,  C_LSq,  C_RSq,  C_Sep,  C_Err */
+/*X_DOC*/{  &x_var, &x_var, &x_err, &x_err, &x_err, &x_err, &x_com, &x_ign, &x_bst, &x_err, &x_com, &x_err, /*X_DOC*/ &x_doc, &x_err, &x_err, &x_err, &x_err, &x_err  },
+/*X_VAR*/{  0,      0,      &x_err, 0,      &x_err, &x_err, 0,      &x_est, &x_err, &x_err, 0,      &x_atr, /*X_VAR*/ &x_ob2, &x_eob, &x_ar2, &x_ear, &x_val, &x_err  },
+/*X_STR*/{  0,      0,      0,      0,      0,      0,      0,      0,      &x_est, &x_bsc, 0,      0,      /*X_STR*/ 0,      0,      0,      0,      0,      &x_err  },
+/*X_SCH*/{  &x_esc, &x_err, &x_err, &x_err, &x_err, &x_err, 0,      &x_err, &x_esc, &x_esc, 0,      &x_err, /*X_STR*/ &x_err, &x_err, &x_err, &x_err, &x_err, &x_err  },
+/*X_VAL*/{  &x_var, &x_var, &x_err, &x_int, &x_err, &x_sg1, &x_com, &x_ign, &x_bst, &x_err, &x_com, &x_err, /*X_VAL*/ &x_ob1, &x_err, &x_ar1, &x_ear, &x_val, &x_err  },
+/*X_INT*/{  &x_err, &x_re2, &x_err, 0,      &x_re1, &x_err, 0,      &x_enu, &x_err, &x_err, 0,      &x_err, /*X_INT*/ &x_err, &x_eob, &x_err, &x_ear, &x_val, &x_err  },
+/*X_RE1*/{  &x_err, &x_re2, &x_err, 0,      &x_err, &x_err, 0,      &x_enu, &x_err, &x_err, 0,      &x_err, /*X_RE1*/ &x_err, &x_eob, &x_err, &x_ear, &x_val, &x_err  },
+/*X_RE2*/{  &x_err, &x_err, &x_err, &x_rn3, &x_err, &x_rn3, 0,      &x_err, &x_err, &x_err, 0,      &x_err, /*X_RE2*/ &x_err, &x_err, &x_err, &x_err, &x_err, &x_err  },
+/*X_RE3*/{  &x_err, &x_err, &x_err, 0,      &x_err, &x_err, 0,      &x_enu, &x_err, &x_err, 0,      &x_err, /*X_RE3*/ &x_err, &x_eob, &x_err, &x_ear, &x_val, &x_err  },
+/*X_ATR*/{  &x_var, &x_var, &x_err, &x_err, &x_err, &x_err, &x_com, &x_ign, &x_bst, &x_err, &x_com, &x_err, /*X_ATR*/ &x_err, &x_eob, &x_err, &x_err, &x_err, &x_err  },
+/*X_SEO*/{  &x_err, &x_err, &x_err, &x_err, &x_err, &x_err, &x_com, &x_ign, &x_err, &x_err, &x_com, &x_err, /*X_SEO*/ &x_err, &x_eob, &x_err, &x_err, &x_val, &x_err  },
+/*X_SEA*/{  &x_err, &x_err, &x_err, &x_err, &x_err, &x_err, 0,      &x_ign, &x_err, &x_err, 0,      &x_err, /*X_SEA*/ &x_err, &x_err, &x_err, &x_ear, &x_val, &x_err  },
+/*X_EAT*/{  &x_err, &x_err, &x_err, &x_err, &x_err, &x_err, 0,      &x_ign, &x_err, &x_err, 0,      &x_atr, /*X_EAT*/ &x_ob2, &x_err, &x_ar2, &x_err, &x_err, &x_err  },
+/*X_SLC*/{  &x_com, &x_com, &x_com, &x_com, &x_com, &x_com, &x_com, &x_com, &x_com, &x_com, &x_com, &x_com, /*X_EAT*/ &x_com, &x_com, &x_com, &x_com, &x_com, &x_err  },
+/*X_SLC*/{  &x_com, &x_com, &x_com, &x_com, &x_com, &x_com, &x_com, &x_com, &x_com, &x_com, &x_com, &x_com, /*X_EAT*/ &x_com, &x_com, &x_com, &x_com, &x_com, &x_err  },
 };
 
 struct ParseData
@@ -547,20 +550,38 @@ void x_val(char c, ParseData* data)
 
 void x_com(char c, ParseData* data)
 {
-	if (!data->buffer.ends_with('/')) {
-		data->buffer += c;
-		return;
+	if (data->buffer.ends_with("/")) {
+		if (c == '/' && data->xcmd != X_SLC) {
+			data->buffer += c;
+			data->xcmdRestore = data->xcmd;
+			data->xcmd = X_SLC;
+			return;
+		}
+		if (c == '*' && data->xcmd != X_MLC) {
+			data->buffer += c;
+			data->xcmdRestore = data->xcmd;
+			data->xcmd = X_MLC;
+			return;
+		}
 	}
-	if (data->xcmd != X_SLC) {
-		data->xcmdRestore = data->xcmd;
-		data->xcmd = X_SLC;
-		return;
+
+	if (data->xcmd == X_SLC) {
+		if (data->column == data->lineSize - 1) {
+			data->xcmd = data->xcmdRestore;
+			data->xcmdRestore = 0;
+			data->buffer.clear();
+			return;
+		}
+	} else if (data->xcmd == X_MLC) {
+		if (c == '/' && data->buffer.ends_with('*')) {
+			data->xcmd = data->xcmdRestore;
+			data->xcmdRestore = 0;
+			data->buffer.clear();
+			return;
+		}
 	}
-	if (data->column == data->lineSize - 1) {
-		data->xcmd = data->xcmdRestore;
-		data->xcmdRestore = 0;
-		data->buffer.clear();
-	}
+
+	data->buffer += c;
 }
 
 void x_ign(char, ParseData*)

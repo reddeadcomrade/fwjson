@@ -102,6 +102,63 @@ TEST(Json, SingleLineComment)
 	EXPECT_EQ(menuObject->attributesCount(), 3);
 }
 
+TEST(Json, MultiLineComment)
+{
+	std::string json =
+		"/* \n"
+		" * This json file describes menu \n"
+		" * menu contains a few submenu items \n"
+		"*/ \n"
+
+		"{\"menu\": {\n"
+			"/* this is \"menu\" section */ \n"
+			"\"id\": \"file\",    /* file submenu  */ \n"
+			"\"value\": \"File\", /* value submenu */ \n"
+
+			"/* \n"
+			" * this is popup section \n"
+			" */ \n"
+
+			"\"popup\": { \n"
+				"/* popup menu items */ \n"
+				"\"menuitem\": [\n"
+					"/* items to work with doc */ \n"
+					"{\n"
+						"/* this item creates new doc     \n"
+						"    - value is a menu title      \n"
+						"    - onclick is a menu callback \n"
+						" */ \n"
+
+						"\"value\":   \"New\",           /* item title    */ \n"
+						"\"onclick\": \"CreateNewDoc()\" /* item callback */ \n"
+					"},\n"
+
+					"/* Open documents */ \n"
+					"{\n"
+						"\"value\":   \"Open\", \n"
+						"\"onclick\": \"OpenDoc()\" \n"
+					"},\n"
+
+					"/* Close documents */ \n"
+					"{\n"
+						"\"value\":   /* Menu title    */ \"Close\", \n"
+						"\"onclick\": /* Menu callback */ \"CloseDoc()\" \n"
+					"}\n"
+				"]\n"
+			"}\n"
+		"}}\n"
+		"/* end of json file */ \n";
+
+	auto object = std::make_unique<Object>();
+	object->parse(json);
+
+	EXPECT_EQ(object->attributesCount(), 1);
+
+	auto menuObject = object->child<Object>("menu");
+	ASSERT_TRUE(menuObject != nullptr);
+	EXPECT_EQ(menuObject->attributesCount(), 3);
+}
+
 TEST(Json, Double)
 {
 	std::string json = "{"
