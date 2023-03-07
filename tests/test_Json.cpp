@@ -90,7 +90,7 @@ TEST(Json, SingleLineComment)
 			"]\n"
 		"}\n"
 	"}}\n"
-	"// end of json file";
+	"// end of json file \n";
 
 	auto object = std::make_unique<Object>();
 	object->parse(json);

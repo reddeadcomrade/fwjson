@@ -10,9 +10,7 @@
 namespace fwjson
 {
 
-class Parser;
 class Node;
-class Null;
 class String;
 class Number;
 class Boolean;
@@ -349,6 +347,48 @@ private:
 
 ////////////////////////////////////////////////////////////////////////////////
 
+struct TextPosition {
+	uint32_t line = 0;
+	uint32_t column = 0;
+};
+
+struct Symbol {
+	uint8_t uValue = 0;
+	char value = 0;
+
+	inline bool isSpace() const {
+		return std::isspace(value);
+	}
+};
+
+class CharIterator {
+public:
+	CharIterator(std::istream& stream);
+
+public:
+	explicit operator bool() const;
+	CharIterator& operator++();
+
+	const Symbol* operator->() const;
+	Symbol* operator->();
+
+	bool operator==(char c) const;
+
+	void skipSpaces();
+	const TextPosition& currentPosition() const;
+
+private:
+	bool next();
+	bool isValid() const;
+
+private:
+	std::istream& m_stream;
+	Symbol m_current;
+	TextPosition m_position;
+};
+
+////////////////////////////////////////////////////////////////////////////////
+
 class Exception final : public std::exception
 {
 public:
@@ -363,10 +403,7 @@ public:
 		int line,
 		int  column) throw();
 
-	Exception(
-		char c,
-		int line,
-		int  column) throw();
+	Exception(const CharIterator& c) throw();
 
 	virtual ~Exception() throw();
 

@@ -34,6 +34,7 @@ if(NOT TARGET GTest::gtest)
 endif()
 
 set(SOURCES_TESTCASES
+	test_CharIterator.cpp
 	test_Json.cpp
 	test_Strings.cpp
 	test_Parsing.cpp

@@ -3,6 +3,7 @@
 #include <exception>
 #include <istream>
 #include <sstream>
+#include <iterator>
 #include <string>
 #include <climits>
 
@@ -49,9 +50,9 @@ enum CharType
 //Types of ASCII chars
 const CharType chars_type[128] = {
 
-		/*0 */ /*1 */ /*2 */ /*3 */ /*4 */ /*5 */ /*6 */ /*7 */
+          /*0 */ /*1 */ /*2 */ /*3 */ /*4 */ /*5 */ /*6 */ /*7 */
 /*  0 */  C_Err, C_Err, C_Err, C_Err, C_Err, C_Err, C_Err, C_Err,
-/*  8 */  C_Err, C_Sp,  C_Err, C_Err, C_Err, C_Err, C_Err, C_Err,
+/*  8 */  C_Err, C_Sp,  C_Sp,  C_Err, C_Err, C_Err, C_Err, C_Err,
 /* 16 */  C_Err, C_Err, C_Err, C_Err, C_Err, C_Err, C_Err, C_Err,
 /* 24 */  C_Err, C_Err, C_Err, C_Err, C_Err, C_Err, C_Err, C_Err,
 
@@ -72,31 +73,31 @@ const CharType chars_type[128] = {
 
 };
 
-typedef void(*CommandFunc)(char c, ParseData* data);
+typedef void(*CommandFunc)(const CharIterator& c, ParseData* data);
 
-void x_doc(char c, ParseData* data);
-void x_var(char c, ParseData* data);
-void x_bst(char c, ParseData* data);
-void x_est(char c, ParseData* data);
-void x_bsc(char c, ParseData* data);
-void x_esc(char c, ParseData* data);
-void x_atr(char c, ParseData* data);
-void x_int(char c, ParseData* data);
-void x_re1(char c, ParseData* data);
-void x_re2(char c, ParseData* data);
-void x_enu(char c, ParseData* data);
-void x_sg1(char c, ParseData* data);
-void x_rn3(char c, ParseData* data);
-void x_err(char c, ParseData* data);
-void x_ob1(char c, ParseData* data);
-void x_ob2(char c, ParseData* data);
-void x_eob(char c, ParseData* data);
-void x_val(char c, ParseData* data);
-void x_ign(char c, ParseData* data);
-void x_ar1(char c, ParseData* data);
-void x_ar2(char c, ParseData* data);
-void x_ear(char c, ParseData* data);
-void x_com(char c, ParseData* data);
+void x_doc(const CharIterator& c, ParseData* data);
+void x_var(const CharIterator& c, ParseData* data);
+void x_bst(const CharIterator& c, ParseData* data);
+void x_est(const CharIterator& c, ParseData* data);
+void x_bsc(const CharIterator& c, ParseData* data);
+void x_esc(const CharIterator& c, ParseData* data);
+void x_atr(const CharIterator& c, ParseData* data);
+void x_int(const CharIterator& c, ParseData* data);
+void x_re1(const CharIterator& c, ParseData* data);
+void x_re2(const CharIterator& c, ParseData* data);
+void x_enu(const CharIterator& c, ParseData* data);
+void x_sg1(const CharIterator& c, ParseData* data);
+void x_rn3(const CharIterator& c, ParseData* data);
+void x_err(const CharIterator& c, ParseData* data);
+void x_ob1(const CharIterator& c, ParseData* data);
+void x_ob2(const CharIterator& c, ParseData* data);
+void x_eob(const CharIterator& c, ParseData* data);
+void x_val(const CharIterator& c, ParseData* data);
+void x_ign(const CharIterator& c, ParseData* data);
+void x_ar1(const CharIterator& c, ParseData* data);
+void x_ar2(const CharIterator& c, ParseData* data);
+void x_ear(const CharIterator& c, ParseData* data);
+void x_com(const CharIterator& c, ParseData* data);
 
 /*void x_val(ParseData* data);
 
@@ -147,11 +148,11 @@ const CommandFunc parse_commands[X_MAX][C_MAX] = {
 
 struct ParseData
 {
-	inline void setupAttributeName();
-	inline void structureUp();
-	void setupValue();
-	inline void setupAttributeValue();
-	inline void setupArrayValue();
+	void setupAttributeName();
+	void structureUp(const CharIterator& c);
+	void setupValue(const CharIterator& c);
+	void setupAttributeValue(const CharIterator& c);
+	void setupArrayValue(const CharIterator& c);
 
 	Node* parent = nullptr;
 	std::string attribute;
@@ -159,21 +160,18 @@ struct ParseData
 	bool isVariable = false;
 	int xcmd = X_DOC;
 	int xcmdRestore = 0;
-	int line = 0;
-	int lineSize = 0;
-	int column = 0;
 	Type type = Type::Null;
 };
 
 void ParseData::setupAttributeName()
 {
 	attribute = buffer;
-	buffer = std::string();
+	buffer.clear();
 }
 
-void ParseData::structureUp()
+void ParseData::structureUp(const CharIterator& c)
 {
-	setupValue();
+	setupValue(c);
 	parent = parent->parent();
 	if(parent)
 	{
@@ -198,16 +196,16 @@ void ParseData::structureUp()
 	}
 }
 
-void ParseData::setupValue()
+void ParseData::setupValue(const CharIterator& c)
 {
 	switch(parent->type())
 	{
 	case Type::Array:
-		setupArrayValue();
+		setupArrayValue(c);
 		return;
 
 	case Type::Object:
-		setupAttributeValue();
+		setupAttributeValue(c);
 		return;
 
 	default:
@@ -216,7 +214,7 @@ void ParseData::setupValue()
 	}
 }
 
-void ParseData::setupAttributeValue()
+void ParseData::setupAttributeValue(const CharIterator& c)
 {
 	switch(type)
 	{
@@ -247,8 +245,8 @@ void ParseData::setupAttributeValue()
 		{
 			size_t index = 0;
 			double value = std::stod(buffer, &index);
-			if(buffer.size() != index) {
-				throw Exception("Invalid number value", line, column);
+			if (buffer.size() != index) {
+				throw Exception("Invalid number value", c.currentPosition().line, c.currentPosition().column);
 			}
 			static_cast<Object*>(parent)->addNumber(attribute, value);
 			buffer = std::string();
@@ -274,7 +272,7 @@ void ParseData::setupAttributeValue()
 	type = Type::Null;
 }
 
-void ParseData::setupArrayValue()
+void ParseData::setupArrayValue(const CharIterator& c)
 {
 	switch(type)
 	{
@@ -303,7 +301,7 @@ void ParseData::setupArrayValue()
 			size_t index = 0;
 			double value = std::stod(buffer, &index);
 			if(buffer.size() != index) {
-				throw Exception("Invalid number value", line, column);
+				throw Exception("Invalid number value", c.currentPosition().line, c.currentPosition().column);
 			}
 			static_cast<Array*>(parent)->addNumber(value);
 			buffer = std::string();
@@ -328,25 +326,24 @@ void ParseData::setupArrayValue()
 	type = Type::Null;
 }
 
-void x_doc(char c, ParseData* data)
+void x_doc(const CharIterator& c, ParseData* data)
 {
 	data->xcmd = X_ATR;
 }
 
-void x_var(char c, ParseData* data)
+void x_var(const CharIterator& c, ParseData* data)
 {
-	if(data->parent)
-	{
+	if (data->parent) {
 		data->type = Type::String;
 		data->xcmd = X_VAR;
 		data->isVariable = true;
-		data->buffer += c;
+		data->buffer += c->value;
 		return;
 	}
-	throw Exception(c, data->line, data->column);
+	throw Exception(c);
 }
 
-void x_bst(char c, ParseData* data)
+void x_bst(const CharIterator& c, ParseData* data)
 {
 	if (data->parent) {
 		data->type = Type::String;
@@ -354,10 +351,10 @@ void x_bst(char c, ParseData* data)
 		data->isVariable = false;
 		return;
 	}
-	throw Exception(c, data->line, data->column);
+	throw Exception(c);
 }
 
-void x_est(char, ParseData* data)
+void x_est(const CharIterator&, ParseData* data)
 {
 	switch(data->parent->type())
 	{
@@ -375,15 +372,15 @@ void x_est(char, ParseData* data)
 	}
 }
 
-void x_bsc(char, ParseData* data)
+void x_bsc(const CharIterator&, ParseData* data)
 {
 	data->buffer += '\\';
 	data->xcmd = X_SCH;
 }
 
-void x_esc(char c, ParseData* data)
+void x_esc(const CharIterator& c, ParseData* data)
 {
-	switch(c)
+	switch(c->value)
 	{
 	case '"':
 	case '\\':
@@ -394,47 +391,47 @@ void x_esc(char c, ParseData* data)
 	case 'r':
 	case 't':
 	case 'u':
-		data->buffer += c;
+		data->buffer += c->value;
 		data->xcmd = X_STR;
 		break;
 
 	default:
-		throw Exception(c, data->line, data->column);
+		throw Exception(c);
 	}
 }
 
-void x_atr(char c, ParseData* data)
+void x_atr(const CharIterator& c, ParseData* data)
 {
-	if(data->parent->type() != Type::Object)
-	{
-		throw Exception(c, data->line, data->column);
+	if (data->parent->type() == Type::Object) {
+		data->setupAttributeName();
+		data->xcmd = X_VAL;
+		return;
 	}
-	data->setupAttributeName();
-	data->xcmd = X_VAL;
+	throw Exception(c);
 }
 
-void x_int(char c, ParseData* data)
+void x_int(const CharIterator& c, ParseData* data)
 {
 	data->xcmd = X_INT;
 	data->type = Type::Number;
-	data->buffer += c;
+	data->buffer += c->value;
 }
 
-void x_re1(char c, ParseData* data)
+void x_re1(const CharIterator& c, ParseData* data)
 {
 	data->xcmd = X_RE1;
 	data->type = Type::Number;
-	data->buffer += c;
+	data->buffer += c->value;
 }
 
-void x_re2(char c, ParseData* data)
+void x_re2(const CharIterator& c, ParseData* data)
 {
 	data->xcmd = X_RE2;
 	data->type = Type::Number;
-	data->buffer += c;
+	data->buffer += c->value;
 }
 
-void x_enu(char, ParseData* data)
+void x_enu(const CharIterator&, ParseData* data)
 {
 	switch(data->parent->type())
 	{
@@ -452,7 +449,7 @@ void x_enu(char, ParseData* data)
 	}
 }
 
-void x_sg1(char c, ParseData* data)
+void x_sg1(const CharIterator& c, ParseData* data)
 {
 	if(c == '+')
 	{
@@ -463,72 +460,69 @@ void x_sg1(char c, ParseData* data)
 	{
 		data->xcmd = X_INT;
 		data->type = Type::Number;
-		data->buffer += c;
+		data->buffer += c->value;
 	}
 }
 
-void x_rn3(char c, ParseData* data)
+void x_rn3(const CharIterator& c, ParseData* data)
 {
 	data->xcmd = X_RE3;
-	data->buffer += c;
+	data->buffer += c->value;
 }
 
-void x_ob1(char, ParseData* data)
+void x_ob1(const CharIterator& c, ParseData* data)
 {
 	data->type = Type::Object;
-	data->setupValue();
+	data->setupValue(c);
 	data->xcmd = X_ATR;
 }
 
-void x_ob2(char c, ParseData* data)
+void x_ob2(const CharIterator& c, ParseData* data)
 {
 	data->setupAttributeName();
 	x_ob1(c,data);
 }
 
-void x_eob(char c, ParseData* data)
+void x_eob(const CharIterator& c, ParseData* data)
 {
-	if(data->parent->type() == Type::Object)
-	{
-		data->structureUp();
+	if (data->parent->type() == Type::Object) {
+		data->structureUp(c);
 		return;
 	}
-	throw Exception(c, data->line, data->column);
+	throw Exception(c);
 }
 
-void x_ar1(char, ParseData* data)
+void x_ar1(const CharIterator& c, ParseData* data)
 {
 	data->type = Type::Array;
-	data->setupValue();
+	data->setupValue(c);
 	data->xcmd = X_VAL;
 }
 
-void x_ar2(char c, ParseData* data)
+void x_ar2(const CharIterator& c, ParseData* data)
 {
 	data->setupAttributeName();
 	x_ar1(c, data);
 }
 
-void x_ear(char c, ParseData* data)
+void x_ear(const CharIterator& c, ParseData* data)
 {
-	if(data->parent->type() == Type::Array)
-	{
-		data->structureUp();
+	if (data->parent->type() == Type::Array) {
+		data->structureUp(c);
 		return;
 	}
-	throw Exception(c, data->line, data->column);
+	throw Exception(c);
 }
 
-void x_err(char c, ParseData* data)
+void x_err(const CharIterator& c, ParseData*)
 {
-	throw Exception(c, data->line, data->column);
+	throw Exception(c);
 }
 
-void x_val(char c, ParseData* data)
+void x_val(const CharIterator& c, ParseData* data)
 {
-	if(data->parent)
-	{
-		data->setupValue();
+	if (data->parent) {
+		data->setupValue(c);
 		switch(data->parent->type())
 		{
 		case Type::Array:
@@ -545,20 +539,20 @@ void x_val(char c, ParseData* data)
 		}
 		return;
 	}
-	throw Exception(c, data->line, data->column);
+	throw Exception(c);
 }
 
-void x_com(char c, ParseData* data)
+void x_com(const CharIterator& c, ParseData* data)
 {
 	if (data->buffer.ends_with("/")) {
 		if (c == '/' && data->xcmd != X_SLC) {
-			data->buffer += c;
+			data->buffer += c->value;
 			data->xcmdRestore = data->xcmd;
 			data->xcmd = X_SLC;
 			return;
 		}
 		if (c == '*' && data->xcmd != X_MLC) {
-			data->buffer += c;
+			data->buffer += c->value;
 			data->xcmdRestore = data->xcmd;
 			data->xcmd = X_MLC;
 			return;
@@ -566,7 +560,7 @@ void x_com(char c, ParseData* data)
 	}
 
 	if (data->xcmd == X_SLC) {
-		if (data->column == data->lineSize - 1) {
+		if (c == '\n') {
 			data->xcmd = data->xcmdRestore;
 			data->xcmdRestore = 0;
 			data->buffer.clear();
@@ -581,10 +575,10 @@ void x_com(char c, ParseData* data)
 		}
 	}
 
-	data->buffer += c;
+	data->buffer += c->value;
 }
 
-void x_ign(char, ParseData*)
+void x_ign(const CharIterator&, ParseData*)
 {}
 
 } // namespace
@@ -984,25 +978,18 @@ void Object::parseStream(std::istream& stream)
 		ParseData data;
 		data.parent = this;
 
-		std::string line;
-		while (std::getline(stream, line)) {
-			++data.line;
-			data.column = 0;
-			data.lineSize = line.size();
-
-			for(char* c_ptr = line.data(); data.column < data.lineSize; data.column++, c_ptr++) {
-				auto nextChar = static_cast<std::int8_t>(*c_ptr);
-				CharType charType = nextChar > 0 ? chars_type[nextChar] : C_Uni;
-
-				if (CommandFunc cmd = parse_commands[data.xcmd][charType]) {
-					cmd((*c_ptr), &data);
-				} else {
-					data.buffer += (*c_ptr);
-				}
+		CharIterator it(stream);
+		while (it) {
+			CharType charType = it->value > 0 ? chars_type[it->value] : C_Uni;
+			if (CommandFunc cmd = parse_commands[data.xcmd][charType]) {
+				cmd(it, &data);
+			} else {
+				data.buffer += it->value;
 			}
+			++it;
 		}
 		if(!data.buffer.empty()) {
-			data.setupValue();
+			data.setupValue(it);
 		}
 	}
 	catch(const Exception& e)
@@ -1200,6 +1187,75 @@ Array* Array::addArray()
 
 ////////////////////////////////////////////////////////////////////////////////
 
+CharIterator::CharIterator(std::istream& stream)
+	: m_stream(stream)
+{
+	next();
+}
+
+CharIterator::operator bool() const
+{
+	return isValid();
+}
+
+CharIterator& CharIterator::operator++()
+{
+	next();
+	return *this;
+}
+
+const Symbol* CharIterator::operator->() const
+{
+	return &m_current;
+}
+
+bool CharIterator::operator==(char c) const
+{
+	return m_current.value == c;
+}
+
+Symbol* CharIterator::operator->()
+{
+	return &m_current;
+}
+
+void CharIterator::skipSpaces()
+{
+	while (std::isspace(m_current.value) && next()) {}
+}
+
+const TextPosition& CharIterator::currentPosition() const
+{
+	return m_position;
+}
+
+bool CharIterator::next()
+{
+	if (isValid()) {
+		char c;
+		m_stream.read(&c, 1);
+
+		m_current.uValue = c;
+		m_current.value = c;
+		if (c == '\n') {
+			m_position.column = 0;
+			++m_position.line;
+		} else {
+			++m_position.column;
+		}
+
+		return true;
+	}
+	return false;
+}
+
+bool CharIterator::isValid() const
+{
+	return !m_stream.eof() && !m_stream.fail();
+}
+
+////////////////////////////////////////////////////////////////////////////////
+
 Exception::Exception(
 	const std::string& error,
 	const std::string& fileName,
@@ -1251,18 +1307,15 @@ Exception::Exception(
 	}
 }
 
-Exception::Exception(
-	char c,
-	int line,
-	int column) throw()
+Exception::Exception(const CharIterator& c) throw()
 	: std::exception()
 {
 	m_error = " (" +
-			  std::to_string(line) +
+			  std::to_string(c.currentPosition().line) +
 			  ", " +
-			  std::to_string(column) +
+			  std::to_string(c.currentPosition().column) +
 			  "): Unexcepted char '" +
-			  c +
+			  c->value +
 			  "'";
 }
 
