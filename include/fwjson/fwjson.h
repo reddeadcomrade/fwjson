@@ -7,6 +7,8 @@
 #include <vector>
 #include <istream>
 
+#include "char_iterator.h"
+
 namespace fwjson
 {
 
@@ -343,48 +345,6 @@ public:
 
 private:
 	std::vector<Node*> m_data;
-};
-
-////////////////////////////////////////////////////////////////////////////////
-
-struct TextPosition {
-	uint32_t line = 0;
-	uint32_t column = 0;
-};
-
-struct Symbol {
-	uint8_t uValue = 0;
-	char value = 0;
-
-	inline bool isSpace() const {
-		return std::isspace(value);
-	}
-};
-
-class CharIterator {
-public:
-	CharIterator(std::istream& stream);
-
-public:
-	explicit operator bool() const;
-	CharIterator& operator++();
-
-	const Symbol* operator->() const;
-	Symbol* operator->();
-
-	bool operator==(char c) const;
-
-	void skipSpaces();
-	const TextPosition& currentPosition() const;
-
-private:
-	bool next();
-	bool isValid() const;
-
-private:
-	std::istream& m_stream;
-	Symbol m_current;
-	TextPosition m_position;
 };
 
 ////////////////////////////////////////////////////////////////////////////////

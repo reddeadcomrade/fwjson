@@ -1,9 +1,7 @@
 #include <array>
 #include <cassert>
 #include <exception>
-#include <istream>
 #include <sstream>
-#include <iterator>
 #include <string>
 #include <climits>
 
@@ -1182,76 +1180,6 @@ Object* Array::addObject()
 Array* Array::addArray()
 {
 	return static_cast<Array*>(addValue(new Array()));
-}
-
-
-////////////////////////////////////////////////////////////////////////////////
-
-CharIterator::CharIterator(std::istream& stream)
-	: m_stream(stream)
-{
-	next();
-}
-
-CharIterator::operator bool() const
-{
-	return isValid();
-}
-
-CharIterator& CharIterator::operator++()
-{
-	next();
-	return *this;
-}
-
-const Symbol* CharIterator::operator->() const
-{
-	return &m_current;
-}
-
-bool CharIterator::operator==(char c) const
-{
-	return m_current.value == c;
-}
-
-Symbol* CharIterator::operator->()
-{
-	return &m_current;
-}
-
-void CharIterator::skipSpaces()
-{
-	while (std::isspace(m_current.value) && next()) {}
-}
-
-const TextPosition& CharIterator::currentPosition() const
-{
-	return m_position;
-}
-
-bool CharIterator::next()
-{
-	if (isValid()) {
-		char c;
-		m_stream.read(&c, 1);
-
-		m_current.uValue = c;
-		m_current.value = c;
-		if (c == '\n') {
-			m_position.column = 0;
-			++m_position.line;
-		} else {
-			++m_position.column;
-		}
-
-		return true;
-	}
-	return false;
-}
-
-bool CharIterator::isValid() const
-{
-	return !m_stream.eof() && !m_stream.fail();
 }
 
 ////////////////////////////////////////////////////////////////////////////////
